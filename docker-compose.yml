@@ -23,6 +23,7 @@ services:
         mkdir -p /home/trino/alluxio/conf/  
         cp /tmp/config-files/alluxio/core-site.xml.with-alluxio /home/trino/alluxio/conf/core-site.xml
         cp /tmp/config-files/alluxio/alluxio-site.properties /home/trino/alluxio/conf/alluxio-site.properties
+        cp /tmp/config-files/alluxio/metrics.properties /home/trino/alluxio/conf/metrics.properties
         mkdir -p /home/trino/alluxio/lib/
         client_jar_file=`ls /tmp/jars/alluxio-*-client.jar`
         cp $${client_jar_file} /home/trino/alluxio/lib/
