@@ -19,7 +19,7 @@ rule_files:
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
 scrape_configs:
-  - job_name: 'Trino Coordinator'
+  - job_name: 'trino worker'
     metrics_path: '/metrics/prometheus/'
     static_configs:
     - targets: [ 'trino-coordinator:9696' ]
