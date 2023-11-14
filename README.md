@@ -325,6 +325,20 @@ The contents are displayed and you can see the alluxio.underfs.s3.endpoint prope
 
 ### Step 8. Explore the Alluxio Edge Dashboard
 
+a. Display the Prometheus Web console
+
+Point your Web browser to the Prometheus docker container at:
+
+     http://localhost:9090
+
+b. Disoplay the Grafana Web console
+
+Point your Web browser to the Grafana docker container at:
+
+     http://localhost:3000
+
+Sign in the user "admin" and the password "admin". When prompted to change your password, you may click on the "skip" link.
+
 TBD
 
 --
