@@ -85,13 +85,15 @@ The command will create the network object and the docker volumes, then it will 
 
 If you experience errors for not enough CPU, Memory or disk resources, use your Docker console to increase the resource allocations. You may need up to 4 CPUs, 8 GB of Memory and 200 GB of disk image space in your Docker resource settings.
 
-### Step 5. Open two shell session into the Trino docker container
+### Step 5. Open two shell sessions 
 
-Open two shell sessions into the trino-coordinator docker container. The trino-coordinator container deploys the Trino coordinator and Trino worker processes in one container. Run the following commands in two different shell windows:
-
-     docker exec -it trino-coordinator bash
+Open two shell sessions - one into the trino-coordinator Docker container and one into the trino-worker1 Docker container. Run the following command to launch a shell session in the trino-coordinator container:
 
      docker exec -it trino-coordinator bash
+
+Run the following command to launch a shell session in the trino-worker1 container:
+
+     docker exec -it trino-worker1 bash
 
 Your shell session windows should look like this:
 
@@ -99,7 +101,7 @@ Your shell session windows should look like this:
 
 ### Step 6. Run Trino queries and observe the Alluxio Edge cache
 
-a. In the first shell session window, start a Trino command line session:
+a. In the trino-coordinator shell session window, start a Trino command line session:
 
      trino --catalog minio --debug
 
@@ -115,7 +117,7 @@ The TPC/H Trino catalog has been pre-configured for this Trino instance and ther
       ) 
       AS SELECT * FROM tpch.sf100.customer;
 
-b. In the second shell session window, check that Alluxio Edge has not cached any files in the cache storage area yet:
+b. In the trino-worker1 shell session window, check that Alluxio Edge has not cached any files in the cache storage area yet:
 
      find /dev/shm/alluxio_cache/
 
@@ -125,12 +127,12 @@ It will show an empty directory:
      /dev/shm/alluxio_cache/
      /dev/shm/alluxio_cache/LOCAL
 
-c. Back on the first shell session, run a Trino query to cause Alluxio Edge to cache some files:
+c. Back on the trino-coordinator shell session, run a Trino query to cause Alluxio Edge to cache some files:
 
      SELECT count(*) AS No_Of_ACCTS FROM default.customer
      WHERE acctbal > 1000.00 AND acctbal < 7500.00;
 
-Then, on the second shell session, check the number of cache objects Alluxio Edge created. Run the command:
+Then, on the trino-worker1 shell session, check the number of cache objects Alluxio Edge created. Run the command:
 
      find /dev/shm/alluxio_cache/ | wc -l
 
@@ -139,13 +141,13 @@ It will show about 118 cache files were created from the first Trino query:
      $ find /dev/shm/alluxio_cache/ | wc -l
      118
 
-d. Then, in the first shell session window, run a second Trino query that queries more data:
+d. Then, in the trino-coordinator shell session window, run a second Trino query that queries more data:
 
      SELECT name, mktsegment, acctbal FROM default.customer
      WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
      ORDER  BY acctbal;
 
-e. In the second shell session window, recheck the number of Alluxio Edge cache files and you should see an increasing number of cache files. Run the command:
+e. In the trino-worker1 shell session window, recheck the number of Alluxio Edge cache files and you should see an increasing number of cache files. Run the command:
 
      find /dev/shm/alluxio_cache/ | wc -l
 
@@ -154,13 +156,13 @@ It will show more cache files being created by Alluxio Edge:
      $ find /dev/shm/alluxio_cache/ | wc -l
      154
 
-f. Back in the first shell session window, run a third Trino query:
+f. Back in the trino-coordinator shell session window, run a third Trino query:
 
      SELECT mktsegment, AVG(acctbal) FROM default.customer
      WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
      GROUP  BY mktsegment, acctbal;
 
-g. Again, in the second shell session window, recheck the number of Alluxio Edge cache files and you should see that the number of cache files did not change. The third query, while different from the other two queries, was able to get all of its data from the Alluxio Edge cache and did not have to go to the S3 under store (MinIO) to get the data. And it did not have to cache any more data either. Run the command:
+g. Again, in the trino-worker1 shell session window, recheck the number of Alluxio Edge cache files and you should see that the number of cache files did not change. The third query, while different from the other two queries, was able to get all of its data from the Alluxio Edge cache and did not have to go to the S3 under store (MinIO) to get the data. And it did not have to cache any more data either. Run the command:
 
      find /dev/shm/alluxio_cache/ | wc -l
 
@@ -169,14 +171,14 @@ It shows the same amount of cache files:
      $ find /dev/shm/alluxio_cache/ | wc -l
      154
 
-h. If you change the query's projection list and add more columns, you will see more data being cached. In the first shell session window, run this Trino query:
+h. If you change the query's projection list and add more columns, you will see more data being cached. In the trino-coordinator shell session window, run this Trino query:
 
      SELECT custkey, name, mktsegment, phone, acctbal, comment 
      FROM  default.customer
      WHERE acctbal > 3500.00 AND acctbal < 4000.00 
      ORDER BY name;
 
-i. Now, if you recheck the number of cache files in the second shell session window, you will see a much larger number of cache files. This was caused by a great number of columns being read from the parquet files and by Alluxio Edge caching that data. Run the command:
+i. Now, if you recheck the number of cache files in the trino-worker1 shell session window, you will see a much larger number of cache files. This was caused by a great number of columns being read from the parquet files and by Alluxio Edge caching that data. Run the command:
 
      find /dev/shm/alluxio_cache/ | wc -l
 
