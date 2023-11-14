@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<configuration>
+
+    <!-- Enable the Alluxio Edge Cache Integration -->
+    <property>
+      <name>fs.s3a.impl</name>
+      <value>alluxio.emon.hadoop.FileSystemEE</value>
+    </property>
+
+    <property>
+      <name>fs.s3.impl</name>
+      <value>alluxio.emon.hadoop.FileSystemEE</value>
+    </property>
+
+</configuration>

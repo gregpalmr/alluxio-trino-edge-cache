@@ -1,0 +1,9 @@
+---
+startDelaySeconds: 0
+ssl: false
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+rules:
+- pattern: ".*"
+

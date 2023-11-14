@@ -1,0 +1,176 @@
+version: '3.7' 
+
+services:
+
+  trino-coordinator:
+    image: 'trinodb/trino:418'
+    hostname: trino-coordinator
+    container_name: trino-coordinator
+    shm_size: '1.5gb'
+    networks:
+      custom:
+        ipv4_address: 172.26.0.10
+    ports:
+      - '8080:8080'
+    volumes:
+      - trino-coordinator-data:/data
+      - ./config-files:/tmp/config-files:ro
+      - ./jars:/tmp/jars:ro
+    command:
+      - /bin/bash
+      - -c 
+      - |
+        mkdir -p /home/trino/alluxio/conf/  
+        cp /tmp/config-files/alluxio/core-site.xml.with-alluxio /home/trino/alluxio/conf/core-site.xml
+        cp /tmp/config-files/alluxio/alluxio-site.properties /home/trino/alluxio/conf/alluxio-site.properties
+        mkdir -p /home/trino/alluxio/lib/
+        cp /tmp/jars/alluxio-*-client.jar /home/trino/alluxio/lib/
+        cp /tmp/jars/alluxio-underfs-emon-s3a-*.jar /home/trino/alluxio/lib/
+        cp /tmp/jars/jmx_prometheus_javaagent-0.20.0.jar /home/trino/alluxio/lib/
+        find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
+        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/hive/
+        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/hive/
+        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/hudi/
+        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/hudi/
+        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/delta-lake/
+        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/delta-lake/
+        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/iceberg/
+        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/iceberg/
+        cp -R /tmp/config-files/trino/* /etc/trino/
+        cp /home/trino/alluxio/conf/core-site.xml /etc/trino/core-site.xml
+        cp /tmp/config-files/trino/jmx_export_config.yaml /etc/trino/jmx_export_config.yaml
+        mkdir /home/trino
+        chown -R trino:trino /home/trino
+        /usr/lib/trino/bin/run-trino
+
+  mariadb:
+    image: 'mariadb:latest'
+    hostname: mariadb
+    container_name: mariadb
+    networks:
+      custom:
+        ipv4_address: 172.26.0.3
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: metastore_db
+    volumes:
+      - mariadb-data:/var/lib/mysql
+
+  hive-metastore:
+    image: 'bitsondatadev/hive-metastore:latest'
+    hostname: hive-metastore
+    container_name: hive-metastore
+    networks:
+      custom:
+        ipv4_address: 172.26.0.4
+    ports:
+      - '9083:9083' # Metastore Thrift
+    volumes:
+      - ./config-files:/tmp/config-files:ro
+    environment:
+      METASTORE_DB_HOSTNAME: mariadb
+    depends_on:
+      - mariadb
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+        cp /tmp/config-files/hive/metastore-site.xml /opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml
+        /entrypoint.sh
+        "
+  minio:
+    image: 'minio/minio:latest'
+    hostname: minio
+    container_name: minio
+    networks:
+      custom:
+        ipv4_address: 172.26.0.5
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server --console-address ":9001" /data
+
+  minio-create-buckets:
+    image: minio/mc:latest
+    container_name: minio-create-buckets
+    networks:
+      custom:
+        ipv4_address: 172.26.0.6
+    depends_on:
+      - minio
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
+      if [ \"`/usr/bin/mc ls myminio`\" == \"\" ]; then 
+         echo \"Creating bucket myminio/hive\" && \
+         /usr/bin/mc mb myminio/hive && \
+         /usr/bin/mc policy download myminio/hive && \
+         /usr/bin/mc cp /etc/motd myminio/hive/warehouse/.temp_file; 
+      else 
+         echo \"Bucket myminio/hive already exists, skipping create\"; 
+      fi;
+      exit 0
+      "
+  prometheus:
+    image: prom/prometheus:v2.22.2
+    container_name: prometheus
+    hostname: prometheus
+    domainname: docker.com
+    networks:
+      custom:
+        ipv4_address: 172.26.0.8
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config-files/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command: --web.enable-lifecycle --log.level=debug --config.file=/etc/prometheus/prometheus.yaml
+
+  grafana:
+    image: grafana/grafana-oss:10.0.4
+    networks:
+      custom:
+        ipv4_address: 172.26.0.9
+    container_name: grafana
+    hostname: grafana
+    domainname: docker.com
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config-files:/tmp/config-files:ro
+      - ./bootstrap/bootstrap-grafana.sh:/bootstrap.sh
+    user: root
+    entrypoint: ["/bootstrap.sh"]
+
+volumes:
+  mariadb-data:
+    driver: local
+  minio-data:
+    driver: local
+  trino-coordinator-data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  custom:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.26.0.0/16
+        gateway: 172.26.0.1
