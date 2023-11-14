@@ -127,10 +127,8 @@ It will show an empty directory:
 
 c. Back on the first shell session, run a Trino query to cause Alluxio Edge to cache some files:
 
-     trino>
-
-          SELECT count(*) AS No_Of_ACCTS FROM default.customer
-          WHERE acctbal > 1000.00 AND acctbal < 7500.00;
+     SELECT count(*) AS No_Of_ACCTS FROM default.customer
+     WHERE acctbal > 1000.00 AND acctbal < 7500.00;
 
 Then, on the second shell session, check the number of cache objects Alluxio Edge created. Run the command:
 
@@ -143,11 +141,9 @@ It will show about 118 cache files were created from the first Trino query:
 
 d. Then, in the first shell session window, run a second Trino query that queries more data:
 
-     trino>
-
-          SELECT name, mktsegment, acctbal FROM default.customer
-          WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
-          ORDER  BY acctbal;
+     SELECT name, mktsegment, acctbal FROM default.customer
+     WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
+     ORDER  BY acctbal;
 
 e. In the second shell session window, recheck the number of Alluxio Edge cache files and you should see an increasing number of cache files. Run the command:
 
@@ -160,11 +156,9 @@ It will show more cache files being created by Alluxio Edge:
 
 f. Back in the first shell session window, run a third Trino query:
 
-     trino>
-
-          SELECT mktsegment, AVG(acctbal) FROM default.customer
-          WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
-          GROUP  BY mktsegment, acctbal;
+     SELECT mktsegment, AVG(acctbal) FROM default.customer
+     WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
+     GROUP  BY mktsegment, acctbal;
 
 g. Again, in the second shell session window, recheck the number of Alluxio Edge cache files and you should see that the number of cache files did not change. The third query, while different from the other two queries, was able to get all of its data from the Alluxio Edge cache and did not have to go to the S3 under store (MinIO) to get the data. And it did not have to cache any more data either. Run the command:
 
@@ -177,12 +171,10 @@ It shows the same amount of cache files:
 
 h. If you change the query's projection list and add more columns, you will see more data being cached. In the first shell session window, run this Trino query:
 
-     trino>
-
-          SELECT custkey, name, mktsegment, phone, acctbal, comment 
-          FROM  default.customer
-          WHERE acctbal > 3500.00 AND acctbal < 4000.00 
-          ORDER BY name;
+     SELECT custkey, name, mktsegment, phone, acctbal, comment 
+     FROM  default.customer
+     WHERE acctbal > 3500.00 AND acctbal < 4000.00 
+     ORDER BY name;
 
 i. Now, if you recheck the number of cache files in the second shell session window, you will see a much larger number of cache files. This was caused by a great number of columns being read from the parquet files and by Alluxio Edge caching that data. Run the command:
 
@@ -199,10 +191,12 @@ Alluxio Edge is integrated with Trino by:
 
 - Copying the Alluxio Edge jar files to the Trino Java class path.
 - Configuring Trino to use Alluxio Edge when accessing the persistent store (MinIO in this case).
-- Configuring Trino Catalog and Hive integration to use Alluxio Edge.
+- Configuring the Trino Catalog to use Alluxio Edge.
 - Configuring Alluxio Edge to point to cache storage (NVMe in this case).
 
-a. Explore how the Alluxio Edge jar files are installed in the Trino class path. Open a shell session to the Trino Coordinator docker container like this:
+a. Copying the Alluxio Edge jar files to the Trino Java class path
+
+Explore how the Alluxio Edge jar files are installed in the Trino class path. Open a shell session to the Trino Coordinator docker container like this:
 
      docker exec -it trino-coordinator bash
 
@@ -214,7 +208,7 @@ Once those older jar files are removed, the Alluxio Edge jar files are copied to
 
      find /usr/lib/trino | grep alluxio
 
-The results will show two Alluxio jar files (emon-client.jar and underfs-emon-s3a.jar) in each of the plugin directories:
+The results will show two Alluxio jar files (alluxio-emon-client.jar and alluxio-underfs-emon-s3a.jar) in each of the plugin directories:
 
      $ find /usr/lib/trino | grep alluxio
      /usr/lib/trino/plugin/hive/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
@@ -226,11 +220,13 @@ The results will show two Alluxio jar files (emon-client.jar and underfs-emon-s3
      /usr/lib/trino/plugin/iceberg/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
      /usr/lib/trino/plugin/iceberg/alluxio-emon-304-SNAPSHOT-client.jar
 
-b. Explore how Trino references Alluxio Edge when queries need to access the persistent store (MinIO in this case). The first thing to do is enable the Alluxio Edge Java class to be used when queries reference a Hive table with a LOCATION containing the s3 and s3a URIs. This is done in the Trino core-site.xml file and can be viewed with the following command:
+b. Configuring Trino to use Alluxio Edge when accessing the persistent store 
+
+Explore how Trino references Alluxio Edge when queries need to access the persistent store (MinIO in this case). The first thing to do is enable the Alluxio Edge Java class to be used when queries reference a Hive table with a LOCATION setting of s3:// or s3a://. This is done in the Trino core-site.xml file and can be viewed with the following command:
 
      cat /etc/trino/core-site.xml
 
-The core-site.xml file shows that Alluxio Edge class named alluxio.emon.hadoop.FileSystemEE being implemented for the s3 and s3a filesystem classes:
+The core-site.xml file shows that an Alluxio Edge class named alluxio.emon.hadoop.FileSystemEE is being implemented for the s3 and s3a filesystem classes:
 
      $ cat /etc/trino/core-site.xml
      <?xml version="1.0"?>
@@ -249,7 +245,7 @@ The core-site.xml file shows that Alluxio Edge class named alluxio.emon.hadoop.F
      
      </configuration>
 
-If you want Alluxio to also service requests for LOCATION specification for hdfs, you can add a new section in the core-site.xml file, like this:
+If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can add a new section in the core-site.xml file, like this:
 
     <property>
         <name>fs.hdfs.impl</name>
@@ -277,4 +273,60 @@ There is also a requirement to modify the Trino /etc/trino/jvm.conf file to incl
      -Dalluxio.home=/home/trino/alluxio
      -Dalluxio.conf.dir=/home/trino/alluxio/conf
 
-c. Configuring Trino Catalog and Hive integration to use Alluxio Edge
+c. Configuring Trino Catalog integration to use Alluxio Edge
+
+The Trino hive catalog must be modified to point to the cores-site.xml file created above in step 2.b. In the Trino catalog's hive.properties file, you can reference the core-site.xml file containing the Alluxio Edge configuration settings. In this case, the Trino catalog configuration file is located at:
+
+     /etc/trino/catalog/minio.properties
+
+And the line that is added to point to the Alluxio Edge configured core-site.xml file is:
+
+     hive.config.resources=/etc/trino/core-site.xml
+
+d. Configuring Alluxio Edge to point to cache storage (NVMe in this case).
+
+The Alluxio home directory can be put anywhere on the Trino node. On this demo environment, a directory named:
+
+     /home/trino/alluxio/
+
+was created to store the Alluxio Edge jar files and the Alluxio Edge configuration files. The main Alluxio configuration file is named alluxio-site.properties and this is where the settings are placed to direct Alluxio Edge to integrate with under store (MinIO in this case) and to direct Alluxio Edge to use local NVMe storage for caching data. Run the following command to see the contents of the alluxio-site.properties file:
+
+     cat /home/trino/alluxio/conf/alluxio-site.properties
+
+The contents are displayed and you can see the alluxio.underfs.s3.endpoint property is set to the MinIO endpoint and the cache medium is specified with the alluxio.user.client.cache.* properties. In this demo environment, we are using the RAM disk for cache, but in a production environment, larger NVMe storage volumes would be used.
+
+     $ cat /home/trino/alluxio/conf/alluxio-site.properties
+     # FILE: alluxio-site.properties
+     #
+     
+     # Disable DORA
+     #
+     alluxio.dora.enabled=false
+     
+     # Alluxio under file system setup (MinIO)
+     #
+     alluxio.underfs.s3.endpoint=http://minio:9000
+     s3a.accessKeyId=minio
+     s3a.secretKey=minio123
+     alluxio.underfs.s3.inherit.acl=false
+     alluxio.underfs.s3.disable.dns.buckets=true
+     
+     # Enable edge cache on client
+     #
+     alluxio.user.client.cache.enabled=true
+     alluxio.user.client.cache.size=1GB
+     alluxio.user.client.cache.dirs=/dev/shm/alluxio_cache
+     
+     # Enable edge metrics collection
+     alluxio.user.metrics.collection.enabled=true
+     
+     # end of file
+
+
+### Step 8. Explore the Alluxio Edge Dashboard
+
+TBD
+
+--
+
+Please Direct questions or comments to greg.palmer@alluxio.com
