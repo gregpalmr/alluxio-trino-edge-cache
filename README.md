@@ -15,7 +15,7 @@ With Alluxio Edge, you can improve query performance, speed up I/O, reduce cloud
 
 Alluxio Edge works by embedding itself in the Trino or PrestoBD worker node process itself and monitors the file requests in real time. If a file is already cached on the local cache storage (typically NVMe), Alluxio returns the file without having to retrieve it again from the persistent object store.  If the file is not already cached, Alluxio Edge retrieves it from the persistent object store and caches it locally as well.
 
-![alt Alluxio Edge Solution](images/images/Alluxio_Edge_How_Does_It_Work.png?raw=true)
+![alt Alluxio Edge Solution](images/Alluxio_Edge_How_Does_It_Work.png?raw=true)
 
 This git repo provides a working environment where Alluxio Edge is integrated with Trino and Apache Hive and provides examples of how Alluxio Edge caches data being queried.
 
@@ -39,7 +39,7 @@ Use the git command to clone this repo (or download the zip file from the github
 
 a. Contact your Alluxio account representative at sales@alluxio.com and request a trial version of Alluxio Edge. Follow their instructions for downloading the installation tar file.
 
-b. There are two Alluxio Edge Java jar files that need to be installed on each Trino or PrestoDB node. Extract the jar files from the tar file using the commands:
+b. There are two Alluxio Edge Java jar files that need to be installed on each Trino node. Extract the jar files from the tar file using the commands:
 
      tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
      alluxio-enterprise-304-SNAPSHOT/client/alluxio-emon-304-SNAPSHOT-client.jar
@@ -195,4 +195,86 @@ It will show a large increase in the number of cache files being created by Allu
 
 ### Step 7. Explore the integration between Trino and Alluxio Edge
 
+Alluxio Edge is integrated with Trino by:
 
+- Copying the Alluxio Edge jar files to the Trino Java class path.
+- Configuring Trino to use Alluxio Edge when accessing the persistent store (MinIO in this case).
+- Configuring Trino Catalog and Hive integration to use Alluxio Edge.
+- Configuring Alluxio Edge to point to cache storage (NVMe in this case).
+
+a. Explore how the Alluxio Edge jar files are installed in the Trino class path. Open a shell session to the Trino Coordinator docker container like this:
+
+     docker exec -it trino-coordinator bash
+
+Some Trino distributions contain older version of Alluxio client jar files and those old files should be removed with a command like this:
+
+     find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
+
+Once those older jar files are removed, the Alluxio Edge jar files are copied to the Trino plugin directories for Hive, Hudi, Delta Lake and Iceberg. See the files with this command:
+
+     find /usr/lib/trino | grep alluxio
+
+The results will show two Alluxio jar files (emon-client.jar and underfs-emon-s3a.jar) in each of the plugin directories:
+
+     $ find /usr/lib/trino | grep alluxio
+     /usr/lib/trino/plugin/hive/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
+     /usr/lib/trino/plugin/hive/alluxio-emon-304-SNAPSHOT-client.jar
+     /usr/lib/trino/plugin/hudi/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
+     /usr/lib/trino/plugin/hudi/alluxio-emon-304-SNAPSHOT-client.jar
+     /usr/lib/trino/plugin/delta-lake/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
+     /usr/lib/trino/plugin/delta-lake/alluxio-emon-304-SNAPSHOT-client.jar
+     /usr/lib/trino/plugin/iceberg/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
+     /usr/lib/trino/plugin/iceberg/alluxio-emon-304-SNAPSHOT-client.jar
+
+b. Explore how Trino references Alluxio Edge when queries need to access the persistent store (MinIO in this case). The first thing to do is enable the Alluxio Edge Java class to be used when queries reference a Hive table with a LOCATION containing the s3 and s3a URIs. This is done in the Trino core-site.xml file and can be viewed with the following command:
+
+     cat /etc/trino/core-site.xml
+
+The core-site.xml file shows that Alluxio Edge class named alluxio.emon.hadoop.FileSystemEE being implemented for the s3 and s3a filesystem classes:
+
+     $ cat /etc/trino/core-site.xml
+     <?xml version="1.0"?>
+     <configuration>
+     
+         <!-- Enable the Alluxio Edge Cache Integration -->
+         <property>
+           <name>fs.s3a.impl</name>
+           <value>alluxio.emon.hadoop.FileSystemEE</value>
+         </property>
+     
+         <property>
+           <name>fs.s3.impl</name>
+           <value>alluxio.emon.hadoop.FileSystemEE</value>
+         </property>
+     
+     </configuration>
+
+If you want Alluxio to also service requests for LOCATION specification for hdfs, you can add a new section in the core-site.xml file, like this:
+
+    <property>
+        <name>fs.hdfs.impl</name>
+        <value>alluxio.emon.hadoop.FileSystemEE</value>
+    </property>
+
+But you must also install the appropriate Alluxio Edge understore jar file for the Hadoop release you are using. These jar files are contained in the original Alluxio Edge install tar file you received. There names will be similar to these:
+
+     alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar
+     alluxio-underfs-emon-hadoop-2.10-304-SNAPSHOT.jar
+     alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar
+
+If you have a separate Alluxio Enterprise Edition cluster that you would like to access via Trino queries using the LOCATION setting of alluxio://, then you can add a new section to the core-site.xml file like this:
+
+     <property>
+        <name>fs.alluxio.impl</name>
+        <value>alluxio.emon.hadoop.FileSystemEE</value>
+     </property>
+
+There is no need to copy a new understore jar file.
+
+There is also a requirement to modify the Trino /etc/trino/jvm.conf file to include a the Alluxio Edge variable definitions that point to the Alluxio Edge home directory and the conf directory, like this:
+
+     # Setup Alluxio edge cache integration
+     -Dalluxio.home=/home/trino/alluxio
+     -Dalluxio.conf.dir=/home/trino/alluxio/conf
+
+c. Configuring Trino Catalog and Hive integration to use Alluxio Edge
