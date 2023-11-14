@@ -74,12 +74,14 @@ The command will create the network object and the docker volumes, then it will 
      Creating volume "alluxio-trino-edge-cache_mariadb-data" with local driver
      Creating volume "alluxio-trino-edge-cache_minio-data" with local driver
      Creating volume "alluxio-trino-edge-cache_trino-coordinator-data" with local driver
+     Creating volume "alluxio-trino-edge-cache_trino-worker1-data" with local driver
      Creating volume "alluxio-trino-edge-cache_prometheus_data" with local driver
+     Creating trino-coordinator ... done
+     Creating trino-worker1     ... done
      Creating prometheus           ... done
      Creating minio             ... done
      Creating mariadb              ... done
      Creating grafana           ... done
-     Creating trino-coordinator ... done
      Creating minio-create-buckets ... done
      Creating hive-metastore       ... done
 
