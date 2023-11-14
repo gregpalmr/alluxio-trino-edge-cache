@@ -24,18 +24,23 @@ services:
         cp /tmp/config-files/alluxio/core-site.xml.with-alluxio /home/trino/alluxio/conf/core-site.xml
         cp /tmp/config-files/alluxio/alluxio-site.properties /home/trino/alluxio/conf/alluxio-site.properties
         mkdir -p /home/trino/alluxio/lib/
-        cp /tmp/jars/alluxio-*-client.jar /home/trino/alluxio/lib/
-        cp /tmp/jars/alluxio-underfs-emon-s3a-*.jar /home/trino/alluxio/lib/
-        cp /tmp/jars/jmx_prometheus_javaagent-0.20.0.jar /home/trino/alluxio/lib/
+        client_jar_file=`ls /tmp/jars/alluxio-*-client.jar`
+        cp $${client_jar_file} /home/trino/alluxio/lib/
+        emon_jar_file=`ls /tmp/jars/alluxio-underfs-emon-s3a-*.jar`
+        cp $${emon_jar_file} /home/trino/alluxio/lib/
+        jmx_jar_file=`ls /tmp/jars/jmx_prometheus_javaagent-*.jar`
+        cp $${jmx_jar_file} /home/trino/alluxio/lib/
         find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
-        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/hive/
-        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/hive/
-        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/hudi/
-        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/hudi/
-        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/delta-lake/
-        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/delta-lake/
-        ln -s /home/trino/alluxio/lib/alluxio-*-client.jar /usr/lib/trino/plugin/iceberg/
-        ln -s /home/trino/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/plugin/iceberg/
+        client_jar_file_basename=`basename $$client_jar_file`
+        ln -s /home/trino/alluxio/lib/$${client_jar_file_basename} /usr/lib/trino/plugin/hive/
+        ln -s /home/trino/alluxio/lib/$${client_jar_file_basename} /usr/lib/trino/plugin/hudi/
+        ln -s /home/trino/alluxio/lib/$${client_jar_file_basename} /usr/lib/trino/plugin/delta-lake/
+        ln -s /home/trino/alluxio/lib/$${client_jar_file_basename} /usr/lib/trino/plugin/iceberg/
+        emon_jar_file_basename=`basename $$emon_jar_file`
+        ln -s /home/trino/alluxio/lib/$${emon_jar_file_basename} /usr/lib/trino/plugin/hive/
+        ln -s /home/trino/alluxio/lib/$${emon_jar_file_basename} /usr/lib/trino/plugin/hudi/
+        ln -s /home/trino/alluxio/lib/$${emon_jar_file_basename} /usr/lib/trino/plugin/delta-lake/
+        ln -s /home/trino/alluxio/lib/$${emon_jar_file_basename} /usr/lib/trino/plugin/iceberg/
         cp -R /tmp/config-files/trino/* /etc/trino/
         cp /home/trino/alluxio/conf/core-site.xml /etc/trino/core-site.xml
         cp /tmp/config-files/trino/jmx_export_config.yaml /etc/trino/jmx_export_config.yaml
