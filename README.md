@@ -353,7 +353,7 @@ Then click on the "Dashboards" link to display the folders and dashboards. Then 
 
 In the Grafana dashboard, scroll down until you see the "Alluxio Cache Hit Rate" panel, which should look like this:
 
-![alt Alluxio Edge Grafana Cache Hit Rate](images/alluxio-edge-grafana-cache-hit-rate.png?raw=true)
+![alt Alluxio Edge Grafana Cache Hit Rate](images/Alluxio_Edge_Grafana_Cache_Hit_Rate.png?raw=true)
 
 ### Step 9. Explore the Alluxio Edge Dashboard configuration
 
