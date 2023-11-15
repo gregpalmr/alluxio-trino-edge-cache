@@ -1,0 +1,4 @@
+# Worker only
+coordinator=false
+http-server.http.port=8080
+discovery.uri=http://trino-coordinator:8080
