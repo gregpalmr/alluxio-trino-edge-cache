@@ -8,6 +8,9 @@
 # GRAFANA
 #
 
+# Disable login page with a modified defaults.ini file
+cp /tmp/config-files/grafana/defaults.ini /usr/share/grafana/conf/defaults.ini
+
 # Install the grafana datasource and dashboard files
 cp /tmp/config-files/grafana/provisioning_datasources_default.yaml /etc/grafana/provisioning/datasources/default.yaml
 cp /tmp/config-files/grafana/provisioning_datasources_datasources.yaml /etc/grafana/provisioning/datasources/datasources.yaml

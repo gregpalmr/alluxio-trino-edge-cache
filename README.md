@@ -341,7 +341,21 @@ Point your Web browser to the Grafana docker container at:
 
      http://localhost:3000
 
-Sign in the user "admin" and the password "admin". When prompted to change your password, you may click on the "skip" link.
+When prompted, sign in with the user "admin" and the password "admin". When you see a message asking you to change the password, you can click on the "Skip" link to keep the same password.
+
+In the upper left side of the dashboard, click on the drop down menu (just to the left of the "Home" label).
+
+![alt Grafana Home Menu](images/Alluxio_Edge_Grafana_Home_Menu.png?raw=true)
+
+Then click on the "Dashboards" link to display the folders and dashboards. Then click on the "Trino-Alluxio" folder link to view the Trino-Alluxio-Edge-Cache-Monitor dashboard. Click on the link for that dashboard to view the panels.
+
+![alt Grafana Home Menu](images/Alluxio-Edge-Grafana-Dashboard1.png?raw=true)
+
+In the Grafana dashboard, scroll down until you see the "Alluxio Cache Hit Rate" panel, which should look like this:
+
+![alt Alluxio Edge Grafana Cache Hit Rate](images/alluxio-edge-grafana-cache-hit-rate.png?raw=true)
+
+### Step 9. Explore the Alluxio Edge Dashboard configuration
 
 TBD
 
