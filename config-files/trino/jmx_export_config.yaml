@@ -6,4 +6,3 @@ global:
   evaluation_interval: 15s
 rules:
 - pattern: ".*"
-
