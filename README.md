@@ -199,7 +199,7 @@ c. Create the Alluxio metrics configuration file
 
 Alluxio Edge can generate metrics using a the Java management extensions (JMX). By doing this, the metrics can be integrated with Prometheus based monitoring systems such as Grafana. Create a metrics.properties file to enable Alluxio Edge to generate JMX metrics using the commands:
 
-     cat << EOF > cat config-files/alluxio/metrics.properties
+     cat <<EOF > config-files/alluxio/metrics.properties
      # Enable the Alluxio Jmx sink
      sink.jmx.class=alluxio.metrics.sink.JmxSink
      EOF
@@ -224,7 +224,7 @@ e. Create the jmx_export_config.yaml file
 
 To enable JMX and Prometheus integration a JVM export configuration file must be created and referenced in the jvm.config file (see sub-step f below). Create the file using the commands:
 
-     cat << EOF > config-files/trino/jmx_export_config.yaml
+     cat <<EOF > config-files/trino/jmx_export_config.yaml
      ---
      startDelaySeconds: 0
      ssl: false
@@ -239,7 +239,7 @@ f. Create the Trino JVM configuration file
 
 The jvm.config file defines the Java virtual machine configuration for the Trino coordinator and worker nodes. In this config file, several settings need to be added to integrate Trino with Alluxio Edge, including the -Dalluxio.home and -Dalluxio.conf.dir environment variables and the -Dalluxio.metrics.conf.file environment variable. Also, for JMX and Prometheus integration, the -javaagent argument must be set and point to the JMX Prometheus agent jar file. In this git repo, the jmx_prometheus_javaagent-0.20.0.jar is provided for your use. In a production deployment, you would have to stage that agent jar file yourself. Create the jvm.config file with these commands:
 
-     cat << EOF > config-files/trino/jvm.config
+     cat <<EOF > config-files/trino/jvm.config
      #
      # FILE jvm.config
      #
@@ -287,7 +287,7 @@ a. Create the Dockerfile
 
 To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile". Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
 
-     cat << EOF > Dockerfile
+     cat <<EOF > Dockerfile
 
      # FILE: Dockerfile
      #
