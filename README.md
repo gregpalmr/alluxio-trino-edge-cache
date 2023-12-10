@@ -23,18 +23,18 @@ This git repo provides a working environment where Alluxio Edge for Trino is int
 
 ### Step 1. Install Prerequisites 
 
-a. Install Docker desktop 
+#### a. Install Docker desktop 
 
 Install Docker desktop on your laptop, including the docker-compose command.
 
      See: https://www.docker.com/products/docker-desktop/
 
-b. Install required utilites, including:
+#### b. Install required utilites, including:
 
 - wget or curl utility
 - tar utility
 
-c. Have access to a Docker registry such as Artifactory
+#### c. (Optional) Have access to a Docker registry such as Artifactory
 
 ### Step 2. Clone this repo
 
@@ -46,9 +46,13 @@ Use the git command to clone this repo (or download the zip file from the github
 
 ### Step 3. Download the Alluxio Edge jar files
 
-a. Contact your Alluxio account representative at sales@alluxio.com and request a trial version of Alluxio Edge. Follow their instructions for downloading the installation tar file.
+#### a. Request a trial version
 
-b. There are two Alluxio Edge Java jar files that need to be installed on each Trino node. First, extract the Alluxio Edge client jar file from the tar file using the command:
+Contact your Alluxio account representative at sales@alluxio.com and request a trial version of Alluxio Edge. Follow their instructions for downloading the installation tar file.
+
+#### b. Extract the jar files
+
+There are two Alluxio Edge Java jar files that need to be installed on each Trino node. First, extract the Alluxio Edge client jar file from the tar file using the command:
 
      tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar \
      alluxio-enterprise-304-SNAPSHOT/client/alluxio-emon-304-SNAPSHOT-client.jar
@@ -72,7 +76,7 @@ or
      tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
      alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar
 
-c. Copy the extracted jar files to the "jars" directory:
+#### c. Copy the extracted jar files to the "jars" directory
 
 Copy the extracted jar files into the "jars" directory using the commands:
 
@@ -80,7 +84,7 @@ Copy the extracted jar files into the "jars" directory using the commands:
 
      cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar ./jars/
 
-If you intend to access a Hadoop filesystem, then you can copy a version of the Hadoop under store interface jar files as well, using the commands:
+If you intend to access a Hadoop file system, then you can copy a version of the Hadoop under store interface jar files as well, using the commands:
 
      cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar ./jars/
 
@@ -92,7 +96,9 @@ or
 
      cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar ./jars/
 
-d. Remove the unused portion of the release directory:
+#### d. Remove the unused portion of the release directory
+
+Remove the unused portion of the release directory with the command:
 
      rm -rf alluxio-enterprise-304-SNAPSHOT
 
@@ -100,7 +106,7 @@ d. Remove the unused portion of the release directory:
 
 Alluxio Edge for Trino is designed to tightly integrate with the Trino coordinator and worker processes, and the Trino catalogs for Hive, Hudi, Delta-Lake and Iceberg. In this step you create the Alluxio configuration files.
 
-a. Create the Alluxio Edge properties file
+#### a. Create the Alluxio Edge properties file
 
 Alluxio Edge for Trino uses a file to configure the deployment. Since this deployment is going to use a local MinIO instance as the persistent under store, and will use a local RAM disk as the cache medium, we will setup the Alluxio properties file using this command:
 
@@ -116,7 +122,7 @@ Alluxio Edge for Trino uses a file to configure the deployment. Since this deplo
      alluxio.underfs.s3.inherit.acl=false
      alluxio.underfs.s3.disable.dns.buckets=true
      
-     # Enable edge cache on client
+     # Enable edge cache on client (RAM disk only)
      #
      alluxio.user.client.cache.enabled=true
      alluxio.user.client.cache.size=1GB
@@ -148,13 +154,13 @@ If you were going to use Hadoop HDFS as your persistent under store, you would i
 
 If you were to change where Alluxio Edge stores cache files, you could replace the "cache on client" section of the properties file like this example, where there are two NVMe volumes of different sizes available:
 
-     # Enable edge cache on client
+     # Enable edge cache on client (with 2 NVMe volumes)
      #
      alluxio.user.client.cache.enabled=true
      alluxio.user.client.cache.size=1024GB,3096GB
      alluxio.user.client.cache.dirs=/mnt/nvme0/alluxio_cache,/mnt/nvme1/alluxio_cache
 
-b. Create the Alluxio core-site.xml file
+#### b. Create the Alluxio core-site.xml file
 
 The mechanism that Alluxio Edge for Trino uses to integrate with the Trino nodes, is to intercept calls to the fs.s3.imp Java class and redirect the read and write request to the Alluxio class. Therefore, it is required to define the Alluxio class that will handle the read and write requests by creating a core-site.xml file with the commands:
 
@@ -186,16 +192,20 @@ The mechanism that Alluxio Edge for Trino uses to integrate with the Trino nodes
      </configuration>
      EOF
 
-If you intend to have Alluxio intercept calls to HDFS in a similar fashion, then you would un-comment the second configuration section like this:
+If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can un-comment the section in the core-site.xml file, like this:
 
-       <property>
-         <name>fs.hdfs.impl</name>
-         <value>alluxio.emon.hadoop.FileSystemEE</value>
-       </property>
+    <property>
+        <name>fs.hdfs.impl</name>
+        <value>alluxio.emon.hadoop.FileSystemEE</value>
+    </property>
 
-You would also have to make sure the jar file is copied to the Trino lib directory, when you build the Docker image in Step 5.
+But you must also install the appropriate Alluxio Edge understore jar file for the Hadoop release you are using. These jar files are contained in the original Alluxio Edge install tar file you received. There names will be similar to these:
 
-c. Create the Alluxio metrics configuration file
+     alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar
+     alluxio-underfs-emon-hadoop-2.10-304-SNAPSHOT.jar
+     alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar
+
+#### c. Create the Alluxio metrics configuration file
 
 Alluxio Edge can generate metrics using a the Java management extensions (JMX). By doing this, the metrics can be integrated with Prometheus based monitoring systems such as Grafana. Create a metrics.properties file to enable Alluxio Edge to generate JMX metrics using the commands:
 
@@ -204,7 +214,7 @@ Alluxio Edge can generate metrics using a the Java management extensions (JMX). 
      sink.jmx.class=alluxio.metrics.sink.JmxSink
      EOF
 
-d. Create a Trino "minio" catalog configuration
+#### d. Create a Trino "minio" catalog configuration
 
 Since we are using MinIO as our persistent object store, configure a Trino catalog to point to Minio using the commands:
 
@@ -220,7 +230,7 @@ Since we are using MinIO as our persistent object store, configure a Trino catal
      hive.config.resources=/home/trino/alluxio/conf/core-site.xml
      EOF
 
-e. Create the jmx_export_config.yaml file
+#### e. Create the jmx_export_config.yaml file
 
 To enable JMX and Prometheus integration a JVM export configuration file must be created and referenced in the jvm.config file (see sub-step f below). Create the file using the commands:
 
@@ -235,7 +245,7 @@ To enable JMX and Prometheus integration a JVM export configuration file must be
      - pattern: ".*"
      EOF
 
-f. Create the Trino JVM configuration file
+#### f. Create the Trino JVM configuration file
 
 The jvm.config file defines the Java virtual machine configuration for the Trino coordinator and worker nodes. In this config file, several settings need to be added to integrate Trino with Alluxio Edge, including the -Dalluxio.home and -Dalluxio.conf.dir environment variables and the -Dalluxio.metrics.conf.file environment variable. Also, for JMX and Prometheus integration, the -javaagent argument must be set and point to the JMX Prometheus agent jar file. In this git repo, the jmx_prometheus_javaagent-0.20.0.jar is provided for your use. In a production deployment, you would have to stage that agent jar file yourself. Create the jvm.config file with these commands:
 
@@ -277,13 +287,11 @@ The jvm.config file defines the Java virtual machine configuration for the Trino
      # end of file
      EOF
 
-
-
 ### Step 5. Build a custom Trino with Alluxio docker image
 
 Alluxio Edge for Trino is designed to tightly integrate with the Trino coordinator and worker processes, and the Trino catalogs for Hive, Hudi, Delta-Lake and Iceberg. In this step you will build a Docker image containing the Trino release files and the Alluxio Edge release files as well as the modified configuration scripts.
 
-a. Create the Dockerfile
+#### a. Create the Dockerfile
 
 To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile". Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
 
@@ -342,6 +350,20 @@ To build a new Docker image file, the Docker build utility requires a specificat
      
      EOF
 
+#### b. (Optional) Upload image to a Docker image registry
+
+If you intend to deploy Trino with Alluxio Edge on a Kubernetes cluster, then you will have to upload the Docker image to a repository that can respond to a "docker pull" request. Usually the repository is hosted inside of your network firewall with products such as Artifactory, JFrog or a self hosted Docker registry.
+
+If you are using DockerHub as your docker registry, Use the "docker push" command to upload the image, like this:
+
+     docker login --username=<PUT_YOUR_DOCKER_HUB_USER_ID_HERE>
+
+     docker tag <PUT_YOUR_NEW_IMAGE_ID_HERE> <PUT_YOUR_DOCKER_HUB_USER_ID_HERE>/trino-alluxio-edge:latest
+
+     docker push <PUT_YOUR_DOCKER_HUB_USER_ID_HERE>/trino-alluxio-edge:latest
+
+     docker pull <PUT_YOUR_DOCKER_HUB_USER_ID_HERE>/trino-alluxio-edge:latest
+
 ### Step 6. Launch the docker containers with Docker Compose
 
 In this deployment, we will be using the Docker Compose utility to launch the Trino with Alluxio Docker images. If you intend to launch the Trino with Alluxio Docker image on a Kubernetes cluster, then you would follow the instructions in Step XX below.
@@ -353,6 +375,10 @@ a. Remove any previous docker volumes that may have been used by the containers,
 Launch the containers defined in the docker-compose.yml file using the command:
 
      docker-compose up -d
+
+or, on Linux:
+
+     docke compose up -d
 
 The command will create the network object and the docker volumes, then it will take some time to pull the various docker images. When it is complete, you see this output:
 
@@ -404,7 +430,7 @@ The TPC/H Trino catalog has been pre-configured for this Trino instance and ther
         format = 'ORC',
         external_location = 's3a://hive/warehouse/customer/'
       ) 
-      AS SELECT * FROM tpch.sf1.customer;
+      AS SELECT * FROM tpch.sf100.customer;
 
 b. In the trino-worker1 shell session window, check that Alluxio Edge has not cached any files in the cache storage area yet:
 
@@ -517,26 +543,35 @@ Explore how Trino references Alluxio Edge when queries need to access the persis
 
      cat /etc/trino/core-site.xml
 
-The core-site.xml file shows that an Alluxio Edge class named alluxio.emon.hadoop.FileSystemEE is being implemented for the s3 and s3a filesystem classes:
+The core-site.xml file shows that an Alluxio Edge class named alluxio.emon.hadoop.FileSystemEE is being implemented for the s3 and s3a file system classes:
 
      $ cat /etc/trino/core-site.xml
-     <?xml version="1.0"?>
+     <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
      <configuration>
      
-         <!-- Enable the Alluxio Edge Cache Integration -->
-         <property>
-           <name>fs.s3a.impl</name>
-           <value>alluxio.emon.hadoop.FileSystemEE</value>
-         </property>
+        <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
+        <property>
+          <name>fs.s3.impl</name>
+          <value>alluxio.emon.hadoop.FileSystemEE</value>
+        </property>
      
-         <property>
-           <name>fs.s3.impl</name>
-           <value>alluxio.emon.hadoop.FileSystemEE</value>
-         </property>
+        <!-- Enable the Alluxio Edge Cache Integration for s3a URIs -->
+        <property>
+          <name>fs.s3a.impl</name>
+          <value>alluxio.emon.hadoop.FileSystemEE</value>
+        </property>
+     
+        <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
+        <!--
+        <property>
+          <name>fs.hdfs.impl</name>
+          <value>alluxio.emon.hadoop.FileSystemEE</value>
+        </property>
+        -->
      
      </configuration>
 
-If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can add a new section in the core-site.xml file, like this:
+If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can un-comment the section in the core-site.xml file, like this:
 
     <property>
         <name>fs.hdfs.impl</name>
@@ -586,14 +621,9 @@ was created to store the Alluxio Edge jar files and the Alluxio Edge configurati
 
 The contents are displayed and you can see the alluxio.underfs.s3.endpoint property is set to the MinIO endpoint and the cache medium is specified with the alluxio.user.client.cache.* properties. In this demo environment, we are using the RAM disk for cache, but in a production environment, larger NVMe storage volumes would be used.
 
-     $ cat /home/trino/alluxio/conf/alluxio-site.properties
      # FILE: alluxio-site.properties
      #
-     
-     # Disable DORA
-     #
-     alluxio.dora.enabled=false
-     
+
      # Alluxio under file system setup (MinIO)
      #
      alluxio.underfs.s3.endpoint=http://minio:9000
@@ -601,18 +631,37 @@ The contents are displayed and you can see the alluxio.underfs.s3.endpoint prope
      s3a.secretKey=minio123
      alluxio.underfs.s3.inherit.acl=false
      alluxio.underfs.s3.disable.dns.buckets=true
-     
-     # Enable edge cache on client
+
+     # Alluxio under file system setup (AWS S3)
+     #
+     #s3a.accessKeyId=<PUT_YOUR_AWS_ACCESS_KEY_ID_HERE>
+     #s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
+     #alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1
+
+     # Alluxio under file system setup (HDFS)
+     #
+     #alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
+     #alluxio.underfs.hdfs.remote=true
+
+     # Enable edge cache on client (RAM disk only)
      #
      alluxio.user.client.cache.enabled=true
      alluxio.user.client.cache.size=1GB
      alluxio.user.client.cache.dirs=/dev/shm/alluxio_cache
-     
+
+     # Enable edge cache on client (with 2 NVMe volumes)
+     #
+     #alluxio.user.client.cache.enabled=true
+     #alluxio.user.client.cache.size=1024GB,3096GB
+     #alluxio.user.client.cache.dirs=/mnt/nvme0/alluxio_cache,/mnt/nvme1/alluxio_cache
+
      # Enable edge metrics collection
      alluxio.user.metrics.collection.enabled=true
-     
-     # end of file
 
+     # Disable DORA
+     alluxio.dora.enabled=false
+
+     # end of file
 
 ### Step 10. Explore the Alluxio Edge Dashboard
 
