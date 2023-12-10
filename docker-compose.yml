@@ -19,6 +19,8 @@ services:
       - /bin/bash
       - -c 
       - |
+        sed -i "s/coordinator=false/coordinator=true/" /etc/trino/config.properties
+        sed -i "s/node-scheduler.include-coordinator=true/node-scheduler.include-coordinator=false/" /etc/trino/config.properties
         /usr/lib/trino/bin/run-trino
 
   trino-worker1:
@@ -38,11 +40,12 @@ services:
       - -c 
       - |
         sed -i "s/coordinator=true/coordinator=false/" /etc/trino/config.properties
+        sed -i "s/node-scheduler.include-coordinator=true/node-scheduler.include-coordinator=false/" /etc/trino/config.properties
         echo "discovery.uri=http://trino-coordinator:8080" >> /etc/trino/config.properties
         /usr/lib/trino/bin/run-trino
 
   mariadb:
-    image: 'mariadb:latest'
+    image: 'mariadb:10.4'
     hostname: mariadb
     container_name: mariadb
     networks:
