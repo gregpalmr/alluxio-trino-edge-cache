@@ -113,7 +113,7 @@ Alluxio Edge for Trino uses a file to configure the deployment. Since this deplo
      cat << EOF > config-files/alluxio/alluxio-site.properties
      # FILE: alluxio-site.properties
      #
-     
+
      # Alluxio under file system setup (MinIO)
      #
      alluxio.underfs.s3.endpoint=http://minio:9000
@@ -121,20 +121,38 @@ Alluxio Edge for Trino uses a file to configure the deployment. Since this deplo
      s3a.secretKey=minio123
      alluxio.underfs.s3.inherit.acl=false
      alluxio.underfs.s3.disable.dns.buckets=true
-     
+
+     # Alluxio under file system setup (AWS S3)
+     #
+     #s3a.accessKeyId=<PUT_YOUR_AWS_ACCESS_KEY_ID_HERE>
+     #s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
+     #alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1
+
+     # Alluxio under file system setup (HDFS)
+     #
+     #alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
+     #alluxio.underfs.hdfs.remote=true
+
      # Enable edge cache on client (RAM disk only)
      #
      alluxio.user.client.cache.enabled=true
      alluxio.user.client.cache.size=1GB
      alluxio.user.client.cache.dirs=/dev/shm/alluxio_cache
-     
+
+     # Enable edge cache on client (with 2 NVMe volumes)
+     #
+     #alluxio.user.client.cache.enabled=true
+     #alluxio.user.client.cache.size=1024GB,3096GB
+     #alluxio.user.client.cache.dirs=/mnt/nvme0/alluxio_cache,/mnt/nvme1/alluxio_cache
+
      # Enable edge metrics collection
      alluxio.user.metrics.collection.enabled=true
-     
+
      # Disable DORA
      alluxio.dora.enabled=false
-    
+
      # end of file
+
      EOF
 
 If you were going to use AWS S3 buckets as your persistent under store, you would include a section like this in the properties file:
