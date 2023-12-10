@@ -5,7 +5,7 @@
      #
      # NOTE: Remove the escape chars (${...}) if copying and pasting
      
-     ARG TRINO_VERSION=403
+     ARG TRINO_VERSION=418
      
      FROM docker.io/trinodb/trino:${TRINO_VERSION}
      
