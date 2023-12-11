@@ -110,50 +110,52 @@ Alluxio Edge for Trino is designed to tightly integrate with the Trino coordinat
 
 Alluxio Edge for Trino uses a file to configure the deployment. Since this deployment is going to use a local MinIO instance as the persistent under store, and will use a local RAM disk as the cache medium, we will setup the Alluxio properties file using this command:
 
-     cat << EOF > config-files/alluxio/alluxio-site.properties
-     # FILE: alluxio-site.properties
-     #
+```
+cat << EOF > config-files/alluxio/alluxio-site.properties
+# FILE: alluxio-site.properties
+#
 
-     # Alluxio under file system setup (MinIO)
-     #
-     alluxio.underfs.s3.endpoint=http://minio:9000
-     s3a.accessKeyId=minio
-     s3a.secretKey=minio123
-     alluxio.underfs.s3.inherit.acl=false
-     alluxio.underfs.s3.disable.dns.buckets=true
+# Alluxio under file system setup (MinIO)
+#
+alluxio.underfs.s3.endpoint=http://minio:9000
+s3a.accessKeyId=minio
+s3a.secretKey=minio123
+alluxio.underfs.s3.inherit.acl=false
+alluxio.underfs.s3.disable.dns.buckets=true
 
-     # Alluxio under file system setup (AWS S3)
-     #
-     #s3a.accessKeyId=<PUT_YOUR_AWS_ACCESS_KEY_ID_HERE>
-     #s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
-     #alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1
+# Alluxio under file system setup (AWS S3)
+#
+#s3a.accessKeyId=<PUT_YOUR_AWS_ACCESS_KEY_ID_HERE>
+#s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
+#alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1
 
-     # Alluxio under file system setup (HDFS)
-     #
-     #alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
-     #alluxio.underfs.hdfs.remote=true
+# Alluxio under file system setup (HDFS)
+#
+#alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
+#alluxio.underfs.hdfs.remote=true
 
-     # Enable edge cache on client (RAM disk only)
-     #
-     alluxio.user.client.cache.enabled=true
-     alluxio.user.client.cache.size=1GB
-     alluxio.user.client.cache.dirs=/dev/shm/alluxio_cache
+# Enable edge cache on client (RAM disk only)
+#
+alluxio.user.client.cache.enabled=true
+alluxio.user.client.cache.size=1GB
+alluxio.user.client.cache.dirs=/dev/shm/alluxio_cache
 
-     # Enable edge cache on client (with 2 NVMe volumes)
-     #
-     #alluxio.user.client.cache.enabled=true
-     #alluxio.user.client.cache.size=1024GB,3096GB
-     #alluxio.user.client.cache.dirs=/mnt/nvme0/alluxio_cache,/mnt/nvme1/alluxio_cache
+# Enable edge cache on client (with 2 NVMe volumes)
+#
+#alluxio.user.client.cache.enabled=true
+#alluxio.user.client.cache.size=1024GB,3096GB
+#alluxio.user.client.cache.dirs=/mnt/nvme0/alluxio_cache,/mnt/nvme1/alluxio_cache
 
-     # Enable edge metrics collection
-     alluxio.user.metrics.collection.enabled=true
+# Enable edge metrics collection
+alluxio.user.metrics.collection.enabled=true
 
-     # Disable DORA
-     alluxio.dora.enabled=false
+# Disable DORA
+alluxio.dora.enabled=false
 
-     # end of file
+# end of file
 
-     EOF
+EOF
+```
 
 If you were going to use AWS S3 buckets as your persistent under store, you would include a section like this in the properties file:
 
@@ -182,33 +184,35 @@ If you were to change where Alluxio Edge stores cache files, you could replace t
 
 The mechanism that Alluxio Edge for Trino uses to integrate with the Trino nodes, is to intercept calls to the fs.s3.imp Java class and redirect the read and write request to the Alluxio class. Therefore, it is required to define the Alluxio class that will handle the read and write requests by creating a core-site.xml file with the commands:
 
-     cat << EOF > config-files/alluxio/core-site.xml
-     <?xml version="1.0"?>
-     <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-     <configuration>
-     
-       <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
-       <property>
-         <name>fs.s3.impl</name>
-         <value>alluxio.emon.hadoop.FileSystemEE</value>
-       </property>
-     
-       <!-- Enable the Alluxio Edge Cache Integration for s3a URIs -->
-       <property>
-         <name>fs.s3a.impl</name>
-         <value>alluxio.emon.hadoop.FileSystemEE</value>
-       </property>
-     
-       <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
-       <!--
-       <property>
-         <name>fs.hdfs.impl</name>
-         <value>alluxio.emon.hadoop.FileSystemEE</value>
-       </property>
-       -->
-     
-     </configuration>
-     EOF
+```
+cat << EOF > config-files/alluxio/core-site.xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+
+  <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
+  <property>
+    <name>fs.s3.impl</name>
+    <value>alluxio.emon.hadoop.FileSystemEE</value>
+  </property>
+
+  <!-- Enable the Alluxio Edge Cache Integration for s3a URIs -->
+  <property>
+    <name>fs.s3a.impl</name>
+    <value>alluxio.emon.hadoop.FileSystemEE</value>
+  </property>
+
+  <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
+  <!--
+  <property>
+    <name>fs.hdfs.impl</name>
+    <value>alluxio.emon.hadoop.FileSystemEE</value>
+  </property>
+  -->
+
+</configuration>
+EOF
+```
 
 If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can un-comment the section in the core-site.xml file, like this:
 
@@ -227,11 +231,6 @@ But you must also install the appropriate Alluxio Edge understore jar file for t
 
 Alluxio Edge can generate metrics using a the Java management extensions (JMX). By doing this, the metrics can be integrated with Prometheus based monitoring systems such as Grafana. Create a metrics.properties file to enable Alluxio Edge to generate JMX metrics using the commands:
 
-     cat <<EOF > config-files/alluxio/metrics.properties
-     # Enable the Alluxio Jmx sink
-     sink.jmx.class=alluxio.metrics.sink.JmxSink
-     EOF
-
 ```
 cat <<EOF > config-files/alluxio/metrics.properties
 # Enable the Alluxio Jmx sink
@@ -243,74 +242,79 @@ EOF
 
 Since we are using MinIO as our persistent object store, configure a Trino catalog to point to Minio using the commands:
 
-     cat <<EOF > config-files/trino/catalog/minio.properties
-     # File: minio.properties
-     connector.name=hive
-     hive.s3-file-system-type=HADOOP_DEFAULT
-     hive.metastore.uri=thrift://hive-metastore:9083
-     hive.non-managed-table-writes-enabled=true
-     hive.s3select-pushdown.enabled=true
-     hive.storage-format=ORC
-     hive.allow-drop-table=true
-     hive.config.resources=/home/trino/alluxio/conf/core-site.xml
-     EOF
-
+```
+cat <<EOF > config-files/trino/catalog/minio.properties
+# File: minio.properties
+connector.name=hive
+hive.s3-file-system-type=HADOOP_DEFAULT
+hive.metastore.uri=thrift://hive-metastore:9083
+hive.non-managed-table-writes-enabled=true
+hive.s3select-pushdown.enabled=true
+hive.storage-format=ORC
+hive.allow-drop-table=true
+hive.config.resources=/home/trino/alluxio/conf/core-site.xml
+EOF
+```
 #### e. Create the jmx_export_config.yaml file
 
 To enable JMX and Prometheus integration a JVM export configuration file must be created and referenced in the jvm.config file (see sub-step f below). Create the file using the commands:
 
-     cat <<EOF > config-files/trino/jmx_export_config.yaml
-     ---
-     startDelaySeconds: 0
-     ssl: false
-     global:
-       scrape_interval:     15s
-       evaluation_interval: 15s
-     rules:
-     - pattern: ".*"
-     EOF
+```
+cat <<EOF > config-files/trino/jmx_export_config.yaml
+---
+startDelaySeconds: 0
+ssl: false
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+rules:
+- pattern: ".*"
+EOF
+```
 
 #### f. Create the Trino JVM configuration file
 
 The jvm.config file defines the Java virtual machine configuration for the Trino coordinator and worker nodes. In this config file, several settings need to be added to integrate Trino with Alluxio Edge, including the -Dalluxio.home and -Dalluxio.conf.dir environment variables and the -Dalluxio.metrics.conf.file environment variable. Also, for JMX and Prometheus integration, the -javaagent argument must be set and point to the JMX Prometheus agent jar file. In this git repo, the jmx_prometheus_javaagent-0.20.0.jar is provided for your use. In a production deployment, you would have to stage that agent jar file yourself. Create the jvm.config file with these commands:
 
-     cat <<EOF > config-files/trino/jvm.config
-     #
-     # FILE jvm.config
-     #
-     # DESC: Trino JVM configuration script
-     #
-     
-     -server
-     #-Xms32G
-     #-Xmx32G
-     -XX:InitialRAMPercentage=80
-     -XX:MaxRAMPercentage=80
-     -XX:G1HeapRegionSize=32M
-     -XX:+ExplicitGCInvokesConcurrent
-     -XX:+HeapDumpOnOutOfMemoryError
-     -XX:+ExitOnOutOfMemoryError
-     -XX:-OmitStackTraceInFastThrow
-     -XX:ReservedCodeCacheSize=256M
-     -XX:PerMethodRecompilationCutoff=10000
-     -XX:PerBytecodeRecompilationCutoff=10000
-     -Djdk.attach.allowAttachSelf=true
-     -Djdk.nio.maxCachedBufferSize=2000000
-     
-     # Improve AES performance for S3, etc. on ARM64 (JDK-8271567)
-     -XX:+UnlockDiagnosticVMOptions
-     -XX:+UseAESCTRIntrinsics
-     
-     # Setup Alluxio Edge integration
-     -Dalluxio.home=/home/trino/alluxio
-     -Dalluxio.conf.dir=/home/trino/alluxio/conf
-     
-     # Setup Alluxio Edge cache metrics
-     -Dalluxio.metrics.conf.file=/home/trino/alluxio/conf/metrics.properties
-     -javaagent:/home/trino/alluxio/lib/jmx_prometheus_javaagent-0.20.0.jar=9696:/etc/trino/jmx_export_config.yaml
-     
-     # end of file
-     EOF
+```
+cat <<EOF > config-files/trino/jvm.config
+#
+# FILE jvm.config
+#
+# DESC: Trino JVM configuration script
+#
+
+-server
+#-Xms32G
+#-Xmx32G
+-XX:InitialRAMPercentage=80
+-XX:MaxRAMPercentage=80
+-XX:G1HeapRegionSize=32M
+-XX:+ExplicitGCInvokesConcurrent
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:+ExitOnOutOfMemoryError
+-XX:-OmitStackTraceInFastThrow
+-XX:ReservedCodeCacheSize=256M
+-XX:PerMethodRecompilationCutoff=10000
+-XX:PerBytecodeRecompilationCutoff=10000
+-Djdk.attach.allowAttachSelf=true
+-Djdk.nio.maxCachedBufferSize=2000000
+
+# Improve AES performance for S3, etc. on ARM64 (JDK-8271567)
+-XX:+UnlockDiagnosticVMOptions
+-XX:+UseAESCTRIntrinsics
+
+# Setup Alluxio Edge integration
+-Dalluxio.home=/home/trino/alluxio
+-Dalluxio.conf.dir=/home/trino/alluxio/conf
+
+# Setup Alluxio Edge cache metrics
+-Dalluxio.metrics.conf.file=/home/trino/alluxio/conf/metrics.properties
+-javaagent:/home/trino/alluxio/lib/jmx_prometheus_javaagent-0.20.0.jar=9696:/etc/trino/jmx_export_config.yaml
+
+# end of file
+EOF
+```
 
 ### Step 5. Build a custom Trino with Alluxio docker image
 
@@ -320,61 +324,63 @@ Alluxio Edge for Trino is designed to tightly integrate with the Trino coordinat
 
 To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile".  Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
 
-     cat <<EOF > Dockerfile
+```
+cat <<EOF > Dockerfile
 
-     # FILE: Dockerfile
-     #
-     # UASGE: docker build -t mytrino/trino-alluxio-edge .
-     #
-     # NOTE: Remove the escape chars (\${...}) if copying and pasting
-     
-     ARG TRINO_VERSION=403
-     #ARG TRINO_VERSION=418
-     
-     FROM docker.io/trinodb/trino:\${TRINO_VERSION}
-     
-     ARG ALLUXIO_VERSION=304-SNAPSHOT
-     ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0   
-     
-     # Create Alluxio Home
-     RUN mkdir -p /home/trino/alluxio/conf
-     RUN mkdir -p /home/trino/alluxio/lib
-     
-     # Copy Alluxio config files to the Alluxio conf dir
-     COPY config-files/alluxio/core-site.xml           /home/trino/alluxio/conf
-     COPY config-files/alluxio/alluxio-site.properties /home/trino/alluxio/conf
-     COPY config-files/alluxio/metrics.properties      /home/trino/alluxio/conf
-     
-     # Remove old versions of Alluxio jar files from the container
-     RUN find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
-     
-     # Copy the Alluxio Edge client jar file to the Trino catalog dirs
-     COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hive
-     COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hudi
-     COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/delta-lake  
-     COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/iceberg
-     
-     # Copy the Alluxio Edge under store jar file to the Trino lib dir 
-     COPY jars/alluxio-underfs-emon-s3a-\${ALLUXIO_VERSION}.jar          /home/trino/alluxio/lib
-     #COPY jars/alluxio-underfs-emon-hadoop-3.3-\${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
-     #COPY jars/alluxio-underfs-emon-hadoop-2.10-\${ALLUXIO_VERSION}.jar /home/trino/alluxio/lib
-     #COPY jars/alluxio-underfs-emon-hadoop-2.7-\${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
-     
-     # Copy the JVX Prometheus agent jar file to the Alluxio lib dir
-     COPY jars/jmx_prometheus_javaagent-\${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
-     
-     # Copy the Trino config files to the Trino etc dir
-     COPY config-files/trino/catalog/minio.properties /etc/trino/catalog
-     COPY config-files/trino/jvm.config               /etc/trino
-     COPY config-files/alluxio/core-site.xml          /etc/trino
-     COPY config-files/trino/jmx_export_config.yaml   /etc/trino
-     
-     USER trino
-     
-     # Start the Trino service
-     CMD ["/usr/lib/trino/bin/run-trino"]
-     
-     EOF
+# FILE: Dockerfile
+#
+# UASGE: docker build -t mytrino/trino-alluxio-edge .
+#
+# NOTE: Remove the escape chars (\${...}) if copying and pasting
+
+ARG TRINO_VERSION=403
+#ARG TRINO_VERSION=418
+
+FROM docker.io/trinodb/trino:\${TRINO_VERSION}
+
+ARG ALLUXIO_VERSION=304-SNAPSHOT
+ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0   
+
+# Create Alluxio Home
+RUN mkdir -p /home/trino/alluxio/conf
+RUN mkdir -p /home/trino/alluxio/lib
+
+# Copy Alluxio config files to the Alluxio conf dir
+COPY config-files/alluxio/core-site.xml           /home/trino/alluxio/conf
+COPY config-files/alluxio/alluxio-site.properties /home/trino/alluxio/conf
+COPY config-files/alluxio/metrics.properties      /home/trino/alluxio/conf
+
+# Remove old versions of Alluxio jar files from the container
+RUN find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
+
+# Copy the Alluxio Edge client jar file to the Trino catalog dirs
+COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hive
+COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hudi
+COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/delta-lake  
+COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/iceberg
+
+# Copy the Alluxio Edge under store jar file to the Trino lib dir 
+COPY jars/alluxio-underfs-emon-s3a-\${ALLUXIO_VERSION}.jar          /home/trino/alluxio/lib
+#COPY jars/alluxio-underfs-emon-hadoop-3.3-\${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
+#COPY jars/alluxio-underfs-emon-hadoop-2.10-\${ALLUXIO_VERSION}.jar /home/trino/alluxio/lib
+#COPY jars/alluxio-underfs-emon-hadoop-2.7-\${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
+
+# Copy the JVX Prometheus agent jar file to the Alluxio lib dir
+COPY jars/jmx_prometheus_javaagent-\${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
+
+# Copy the Trino config files to the Trino etc dir
+COPY config-files/trino/catalog/minio.properties /etc/trino/catalog
+COPY config-files/trino/jvm.config               /etc/trino
+COPY config-files/alluxio/core-site.xml          /etc/trino
+COPY config-files/trino/jmx_export_config.yaml   /etc/trino
+
+USER trino
+
+# Start the Trino service
+CMD ["/usr/lib/trino/bin/run-trino"]
+
+EOF
+```
 
 #### b. Build the Docker image
 
