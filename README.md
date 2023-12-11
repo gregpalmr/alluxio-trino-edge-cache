@@ -287,6 +287,8 @@ cat <<EOF > config-files/trino/jvm.config
 -server
 #-Xms32G
 #-Xmx32G
+-Xms6G
+-Xmx6G
 -XX:InitialRAMPercentage=80
 -XX:MaxRAMPercentage=80
 -XX:G1HeapRegionSize=32M
