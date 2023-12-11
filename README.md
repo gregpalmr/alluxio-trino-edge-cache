@@ -309,11 +309,9 @@ The jvm.config file defines the Java virtual machine configuration for the Trino
 
 Alluxio Edge for Trino is designed to tightly integrate with the Trino coordinator and worker processes, and the Trino catalogs for Hive, Hudi, Delta-Lake and Iceberg. In this step you will build a Docker image containing the Trino release files and the Alluxio Edge release files as well as the modified configuration scripts.
 
-#### a. Create the Dockerfile
+#### a. Create the Dockerfile spec file
 
-To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile". 
-
-a. Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
+To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile".  Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
 
      cat <<EOF > Dockerfile
 
