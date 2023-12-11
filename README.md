@@ -331,7 +331,8 @@ cat <<EOF > Dockerfile
 #
 # UASGE: docker build -t mytrino/trino-alluxio-edge .
 #
-# NOTE: Remove the escape chars (\${...}) if copying and pasting
+# NOTE: Remove the escape chars (\${...}) if manually copying and pasting
+#       (that is, not using the "cat <<EOF > Dockerfile" command)
 
 ARG TRINO_VERSION=403
 #ARG TRINO_VERSION=418
