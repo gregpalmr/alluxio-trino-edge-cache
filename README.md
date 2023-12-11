@@ -391,7 +391,7 @@ If you are using DockerHub as your docker registry, Use the "docker push" comman
 
 ### Step 6. Launch the docker containers with Docker Compose
 
-In this deployment, we will be using the Docker Compose utility to launch the Trino with Alluxio Docker images. If you intend to launch the Trino with Alluxio Docker image on a Kubernetes cluster, then you would follow the instructions in Step XX below.
+In this deployment, we will be using the Docker Compose utility to launch the Trino with Alluxio Docker images. If you intend to launch the Trino with Alluxio Docker image on a Kubernetes cluster, then you would follow the instructions provided by your Trino release.
 
 a. Remove any previous docker volumes that may have been used by the containers, using the command:
 
