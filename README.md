@@ -322,6 +322,7 @@ To build a new Docker image file, the Docker build utility requires a specificat
      # NOTE: Remove the escape chars (\${...}) if copying and pasting
      
      ARG TRINO_VERSION=403
+     #ARG TRINO_VERSION=418
      
      FROM docker.io/trinodb/trino:\${TRINO_VERSION}
      
