@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
- <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
- <configuration>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
 
-   <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
-   <property>
-     <name>fs.s3.impl</name>
-     <value>alluxio.emon.hadoop.FileSystemEE</value>
-   </property>
+  <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
+  <property>
+    <name>fs.s3.impl</name>
+    <value>alluxio.emon.hadoop.FileSystemEE</value>
+  </property>
 
-   <!-- Enable the Alluxio Edge Cache Integration for s3a URIs -->
-   <property>
-     <name>fs.s3a.impl</name>
-     <value>alluxio.emon.hadoop.FileSystemEE</value>
-   </property>
+  <!-- Enable the Alluxio Edge Cache Integration for s3a URIs -->
+  <property>
+    <name>fs.s3a.impl</name>
+    <value>alluxio.emon.hadoop.FileSystemEE</value>
+  </property>
 
-   <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
-   <!--
-   <property>
-     <name>fs.hdfs.impl</name>
-     <value>alluxio.emon.hadoop.FileSystemEE</value>
-   </property>
-   -->
+  <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
+  <!--
+  <property>
+    <name>fs.hdfs.impl</name>
+    <value>alluxio.emon.hadoop.FileSystemEE</value>
+  </property>
+  -->
 
- </configuration>
+</configuration>
