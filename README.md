@@ -311,7 +311,9 @@ Alluxio Edge for Trino is designed to tightly integrate with the Trino coordinat
 
 #### a. Create the Dockerfile
 
-To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile". Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
+To build a new Docker image file, the Docker build utility requires a specification file named "Dockerfile". 
+
+a. Create this file and include the steps needed to copy the Alluxio Edge jar files and configuration files into the Docker image. For this deployment, create the Dockerfile with these commands:
 
      cat <<EOF > Dockerfile
 
@@ -369,7 +371,13 @@ To build a new Docker image file, the Docker build utility requires a specificat
      
      EOF
 
-#### b. (Optional) Upload image to a Docker image registry
+#### b. Build the Docker image
+
+Build the Docker image using the "docker build" command:
+
+     docker build -t mytrino/trino-alluxio-edge .
+
+#### c. (Optional) Upload image to a Docker image registry
 
 If you intend to deploy Trino with Alluxio Edge on a Kubernetes cluster, then you will have to upload the Docker image to a repository that can respond to a "docker pull" request. Usually the repository is hosted inside of your network firewall with products such as Artifactory, JFrog or a self hosted Docker registry.
 
