@@ -257,7 +257,7 @@ EOF
 ```
 #### e. Create the jmx_export_config.yaml file
 
-To enable JMX and Prometheus integration a JVM export configuration file must be created and referenced in the jvm.config file (see sub-step f below). Create the file using the commands:
+To enable JMX and Prometheus integration, a JVM export configuration file must be created and referenced in the jvm.config file (see sub-step f below). Create the file using the commands:
 
 ```
 cat <<EOF > config-files/trino/jmx_export_config.yaml
