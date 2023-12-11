@@ -232,6 +232,13 @@ Alluxio Edge can generate metrics using a the Java management extensions (JMX). 
      sink.jmx.class=alluxio.metrics.sink.JmxSink
      EOF
 
+```
+cat <<EOF > config-files/alluxio/metrics.properties
+# Enable the Alluxio Jmx sink
+sink.jmx.class=alluxio.metrics.sink.JmxSink
+EOF
+```
+
 #### d. Create a Trino "minio" catalog configuration
 
 Since we are using MinIO as our persistent object store, configure a Trino catalog to point to Minio using the commands:
