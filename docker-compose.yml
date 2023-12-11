@@ -6,6 +6,12 @@ services:
     image: mytrino/trino-alluxio-edge
     hostname: trino-coordinator
     container_name: trino-coordinator
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 6G
     networks:
       custom:
         ipv4_address: 172.26.0.10
@@ -28,6 +34,12 @@ services:
     hostname: trino-worker1
     container_name: trino-worker1
     shm_size: '1.5gb'
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 6G
     networks:
       custom:
         ipv4_address: 172.26.0.11
