@@ -750,7 +750,7 @@ Then click on the "Dashboards" link to display the folders and dashboards and th
 
 In the Grafana dashboard, scroll down until you see the "Alluxio Edge - Cache Hit Rate" panel, which should look like the screen shot below. The Alluxio Edge Grafana metrics tell the story of what is happening with the Alluxio Edge data cache system when various Trino query jobs are executed.
 
-At first Alluxio Edge has no data in the cache and no cache hits or misses. Then, the first Trino query was run at 11:51:00 and that query experienced a zero cache hit rate (not surprisingly), but caused approximately 80 MB of data to be read from the MinIO under store into the Alluxio Edge cache, as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. Here is a copy of the first query statement:
+At first Alluxio Edge had no data in the cache and no cache hits or misses. Then, the first Trino query was run at 11:51:00 and that query experienced a zero cache hit rate (not surprisingly), but caused approximately 80 MB of data to be read from the MinIO under store into the Alluxio Edge cache, as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. Here is a copy of the first query statement:
 
 ```
 SELECT count(*) AS No_Of_ACCTS FROM default.customer
@@ -777,7 +777,7 @@ WHERE  acctbal > 3500.00 AND acctbal < 4000.00
 GROUP  BY mktsegment, acctbal;
 ```
 
-At 11:56:30, the fourth Trino query was run. This query was very different than the previous queries and it required a lot of new data that was not in the Alluxio Edge cache which resulted in decreasing cache it hit that bottomed out at under 20% as shown in the "Cache Hit Rate" panel. Of course, it also caused Alluxio to read much more data from the MinIO under store and cache that new data as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.  If the Alluxio Edge cache was full at the time this query was run, Alluxio Edge would have had to evict some older data to accommodate this new data, but there was enough room for this new data in the cache.
+At 11:56:30, the fourth Trino query was run. This query was very different from the previous queries and it required a lot of new data that was not in the Alluxio Edge cache which resulted in decreasing cache hit rates that bottomed out at under 20% as shown in the "Cache Hit Rate" panel. Of course, it also caused Alluxio to read much more data from the MinIO under store and cache that new data as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.  If the Alluxio Edge cache was full at the time this query was run, Alluxio Edge would have had to evict some older data to accommodate this new data, but there was enough room for this new data in the cache.
 
 Here is a copy of the fourth query statement:
 ```
