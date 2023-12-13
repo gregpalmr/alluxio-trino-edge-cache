@@ -757,7 +757,7 @@ SELECT count(*) AS No_Of_ACCTS FROM default.customer
 WHERE acctbal > 1000.00 AND acctbal < 7500.00;
 ```
 
-At 11:53:30, the second Trino query was run. Because it was accessing most of the same data that the first query retrieved, it saw a cache hit rate of approximately 75% as shown in the "Cache Hit Rate" panel and the "Data Read from Cache" panel. However, because some of the query results were not already in the cache, Alluxio Edge also read some data from the MinIO under store as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. 
+At 11:53:30, the second Trino query was run. Because it accessed most of the same data that the first query retrieved, it saw a cache hit rate of approximately 75% as shown in the "Cache Hit Rate" panel and the "Data Read from Cache" panel. However, because some of the query results were not already in the cache, Alluxio Edge also read some data from the MinIO under store as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. 
 
 Here is a copy of the second query statement:
 
@@ -767,7 +767,7 @@ WHERE  acctbal > 3500.00 AND acctbal < 4000.00
 ORDER  BY acctbal;
 ```
 
-At 11:55:00, the third Trino query was run. While the query statement was different from the previous queries, the data it needed was completely resident in the Alluxio Edge cache and it experienced a 100% cache hit rate, as shown in the "Cache Hit Rate" panel. Also, it did not cause Alluxio Edge to read any data from the MinIO under store or increase the amount of data in the cache as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.
+At 11:55:00, the third Trino query was run. While the query statement was different from the previous queries, the data it needed was fully resident in the Alluxio Edge cache and it experienced a 100% cache hit rate, as shown in the "Cache Hit Rate" panel. Also, it did not cause Alluxio Edge to read any data from the MinIO under store or increase the amount of data in the cache as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.
 
 Here is a copy of the third query statement:
 
@@ -777,7 +777,7 @@ WHERE  acctbal > 3500.00 AND acctbal < 4000.00
 GROUP  BY mktsegment, acctbal;
 ```
 
-At 11:56:30, the fourth Trino query was run. This query was very different from the previous queries and it required a lot of new data that was not in the Alluxio Edge cache which resulted in decreasing cache hit rates that bottomed out at under 20% as shown in the "Cache Hit Rate" panel. Of course, it also caused Alluxio to read much more data from the MinIO under store and cache that new data as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.  If the Alluxio Edge cache was full at the time this query was run, Alluxio Edge would have had to evict some older data to accommodate this new data, but there was enough room for this new data in the cache.
+At 11:56:30, the fourth Trino query was run. This query was very different from the previous queries and it required a lot of new data that was not in the Alluxio Edge cache which resulted in decreasing cache hit rates that bottomed out at under 20% as shown in the "Cache Hit Rate" panel. Of course, it also caused Alluxio to read much more data from the MinIO under store and cache that new data as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.  If the Alluxio Edge cache was full at the time this query was run, Alluxio Edge would have had to evict some older data to accommodate this new data, but there was enough room for this new data to be added to the cache.
 
 Here is a copy of the fourth query statement:
 ```
