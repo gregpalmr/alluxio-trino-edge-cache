@@ -114,6 +114,8 @@ Alluxio Edge for Trino uses a file to configure the deployment. Since this deplo
 cat << EOF > config-files/alluxio/alluxio-site.properties
 # FILE: alluxio-site.properties
 #
+# DESC: This is the main Alluxio Edge properties file and should
+#      be placed in: /home/trino/alluxio/conf/
 
 # Alluxio under file system setup (MinIO)
 #
@@ -188,6 +190,14 @@ The mechanism that Alluxio Edge for Trino uses to integrate with the Trino nodes
 cat << EOF > config-files/alluxio/core-site.xml
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- 
+  FILE: core-site.xml 
+
+  DESC: This is the Alluxio Edge core-site.xml file and should be
+        placed in: /etc/trino/
+-->
+
 <configuration>
 
   <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
@@ -244,7 +254,12 @@ Since we are using MinIO as our persistent object store, configure a Trino catal
 
 ```
 cat <<EOF > config-files/trino/catalog/minio.properties
-# File: minio.properties
+#
+# FILE: minio.properties
+#
+# DESC: This is the Trino catalog config file for the MinIO S3 store. 
+#       It should be placed in: /etc/trino/catalog/
+# 
 connector.name=hive
 hive.s3-file-system-type=HADOOP_DEFAULT
 hive.metastore.uri=thrift://hive-metastore:9083
@@ -261,6 +276,12 @@ To enable JMX and Prometheus integration, a JVM export configuration file must b
 
 ```
 cat <<EOF > config-files/trino/jmx_export_config.yaml
+#
+# FILE: jmx_export_config.yaml
+#
+# DESC: This is the Alluxio Edge Java JMX metrics export file. It should
+#       be placed in: /etc/trino/
+#
 ---
 startDelaySeconds: 0
 ssl: false
@@ -279,9 +300,10 @@ The jvm.config file defines the Java virtual machine configuration for the Trino
 ```
 cat <<EOF > config-files/trino/jvm.config
 #
-# FILE jvm.config
+# FILE: jvm.config
 #
-# DESC: Trino JVM configuration script
+# DESC: This is the Trino Java JVM configuration script and should be
+#       placed in: /etc/trino/
 #
 
 -server
@@ -419,7 +441,7 @@ Launch the containers defined in the docker-compose.yml file using the command:
 
 or, on Linux:
 
-     docke compose up -d
+     docker compose up -d
 
 The command will create the network object and the docker volumes, then it will take some time to pull the various docker images. When it is complete, you see this output:
 

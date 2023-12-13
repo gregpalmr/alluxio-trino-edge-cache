@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!--
+  FILE: core-site.xml
+
+  DESC: This is the Alluxio Edge core-site.xml file and should be
+        placed in: /etc/trino/
+-->
+
 <configuration>
 
   <!-- Enable the Alluxio Edge Cache Integration for s3 URIs -->
