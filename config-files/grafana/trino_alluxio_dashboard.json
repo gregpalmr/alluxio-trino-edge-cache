@@ -36,10 +36,222 @@
         "x": 0,
         "y": 0
       },
-      "id": 9,
+      "id": 31,
       "panels": [],
-      "title": "Effectiveness",
+      "title": "Performance",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "description": "Client.CacheHitRate: Cache hit rate: (# bytes read from cache) / (# bytes requested).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 29,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "sum by (instance) ({job=\"trino worker\", __name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache.*_OneMinuteRate\"}) / \n(sum by (instance) ({job=\"trino worker\", __name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache.*_OneMinuteRate\"}) + \n sum by (instance) ({job=\"trino worker\", __name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesRequestedExternal.*_OneMinuteRate\"}))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Alluxio Edge - Cache Hit Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "description": "Client.CachePagesEvicted: Total number of pages evicted from the client cache.\n\nClient.CacheBytesEvicted: Total number of bytes evicted from the client cache.\n\nClient.CachePutEvictionErrors: Number of failures when putting cached data in the client cache due to failed eviction.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 33,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePagesEvicted.*\", job=\"trino worker\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesEvicted.*\", job=\"trino worker\"}",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePutEvictionErrors.*\", job=\"trino worker\"}",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Alluxio Edge - Cache Evictions (pages, bytes, errors)",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -66,7 +278,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -95,7 +307,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "decbytes"
         },
         "overrides": []
       },
@@ -103,7 +316,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 9
       },
       "id": 11,
       "options": {
@@ -126,14 +339,14 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache.*\", job=\"trino worker\"}",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache.*_OneMinuteRate\", job=\"trino worker\"}",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Alluxio measured bytes read",
+      "title": "Alluxio Edge - Data Read from Cache (Cache Hits)",
       "type": "timeseries"
     },
     {
@@ -141,7 +354,7 @@
         "type": "prometheus",
         "uid": "KaXNuaQ7z"
       },
-      "description": "Client.CachePutErrors: Number of failures when putting cached data in the client cache.",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -161,7 +374,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -190,7 +403,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "decbytes"
         },
         "overrides": []
       },
@@ -198,9 +412,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 9
       },
-      "id": 13,
+      "id": 37,
       "options": {
         "legend": {
           "calcs": [],
@@ -220,14 +434,121 @@
             "uid": "KaXNuaQ7z"
           },
           "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePutErrors.*\", job=\"trino worker\"}",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesRequestedExternal.*_OneMinuteRate\", job=\"trino worker\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Total put error count",
+      "title": "Alluxio Edge - Data Read from UFS (Cache Misses)",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 42,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheSpaceUsed.*\", job=\"trino worker\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Alluxio Edge - Cache Space Used ",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 9,
+      "panels": [],
+      "title": "Effectiveness",
+      "type": "row"
     },
     {
       "datasource": {
@@ -254,7 +575,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -283,7 +604,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percentunit"
         },
         "overrides": []
       },
@@ -291,7 +613,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 26
       },
       "id": 15,
       "options": {
@@ -379,7 +701,7 @@
           "refId": "F"
         }
       ],
-      "title": "Individual error counts by error type",
+      "title": "Alluxio Edge - Individual error counts by error type",
       "type": "timeseries"
     },
     {
@@ -387,7 +709,7 @@
         "type": "prometheus",
         "uid": "KaXNuaQ7z"
       },
-      "description": "Client.CacheGetErrors: Number of failures when getting cached data in the client cache.",
+      "description": "Client.CachePutErrors: Number of failures when putting cached data in the client cache.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -407,7 +729,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -436,7 +758,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "locale"
         },
         "overrides": []
       },
@@ -444,9 +767,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 26
       },
-      "id": 17,
+      "id": 13,
       "options": {
         "legend": {
           "calcs": [],
@@ -466,13 +789,13 @@
             "uid": "KaXNuaQ7z"
           },
           "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheGetErrors.*\", job=\"trino worker\"}",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePutErrors.*\", job=\"trino worker\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Total Get error count",
+      "title": "Alluxio Edge - Total Put Error Count",
       "type": "timeseries"
     },
     {
@@ -500,7 +823,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -529,7 +852,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "locale"
         },
         "overrides": []
       },
@@ -537,7 +861,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 34
       },
       "id": 19,
       "options": {
@@ -577,7 +901,7 @@
           "refId": "B"
         }
       ],
-      "title": "Individual error counts by error type",
+      "title": "Alluxio Edge - Individual Error Counts by Error Type",
       "type": "timeseries"
     },
     {
@@ -585,7 +909,7 @@
         "type": "prometheus",
         "uid": "KaXNuaQ7z"
       },
-      "description": "Client.CacheDeleteNonExistingPageErrors: Number of failures when deleting pages due to absence.\n\nClient.CacheDeleteNotReadyErrors: Number of failures when cache is not ready to delete pages.\n\nClient.CacheDeleteFromStoreErrors: Number of failures when deleting pages from page stores.",
+      "description": "Client.CacheGetErrors: Number of failures when getting cached data in the client cache.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -605,7 +929,101 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 34
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheGetErrors.*\", job=\"trino worker\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Alluxio Edge - Total Get Error Count",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -641,8 +1059,102 @@
       "gridPos": {
         "h": 8,
         "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 40,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePageReadExternalTimeNanos.*\", job=\"trino worker\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Alluxio Edge - Cache Page Read External Time Nanos ",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "description": "Client.CacheDeleteNonExistingPageErrors: Number of failures when deleting pages due to absence.\n\nClient.CacheDeleteNotReadyErrors: Number of failures when cache is not ready to delete pages.\n\nClient.CacheDeleteFromStoreErrors: Number of failures when deleting pages from page stores.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
         "x": 12,
-        "y": 17
+        "y": 42
       },
       "id": 21,
       "options": {
@@ -694,7 +1206,7 @@
           "refId": "B"
         }
       ],
-      "title": "Cache Deletion Error",
+      "title": "Alluxio Edge - Cache Deletion Error",
       "type": "timeseries"
     },
     {
@@ -722,7 +1234,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -751,7 +1263,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "decbytes"
         },
         "overrides": []
       },
@@ -759,193 +1272,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
-      },
-      "id": 34,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Client Cache Bytes Read Cache",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 25
-      },
-      "id": 37,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesRequestedExternal.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Client Cache Bytes Requested External",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 33
+        "y": 50
       },
       "id": 36,
       "options": {
@@ -973,7 +1300,7 @@
           "refId": "A"
         }
       ],
-      "title": "Client Cache Bytes External ",
+      "title": "Alluxio Edge - Cache Read External ",
       "type": "timeseries"
     },
     {
@@ -1001,7 +1328,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -1030,7 +1357,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "decbytes"
         },
         "overrides": []
       },
@@ -1038,193 +1366,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 33
-      },
-      "id": 38,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheSpaceUsed.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Client Cache Space Used",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 41
-      },
-      "id": 40,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePageReadExternalTimeNanos.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Client Cache Page Read External Time Nanos ",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 41
+        "y": 50
       },
       "id": 35,
       "options": {
@@ -1246,13 +1388,13 @@
             "uid": "KaXNuaQ7z"
           },
           "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesEvicted.*\", job=\"trino worker\"}",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesEvicted.*OneMinuteRate\", job=\"trino worker\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Client Cache Bytes Evicted ",
+      "title": "Alluxio Edge - Cache Data Evicted ",
       "type": "timeseries"
     },
     {
@@ -1261,112 +1403,6 @@
         "uid": "KaXNuaQ7z"
       },
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 49
-      },
-      "id": 39,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePageReadCacheTimeNanos.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Client Cache Page Read Cache Time Nanos ",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 57
-      },
-      "id": 25,
-      "panels": [],
-      "title": "Overhead",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "heap.used: The amount of memory from heap area that has been used.\n\nheap.usage: The amount of memory from heap area currently used in GB.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1425,6 +1461,113 @@
         "x": 0,
         "y": 58
       },
+      "id": 39,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "KaXNuaQ7z"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePageReadCacheTimeNanos.*\", job=\"trino worker\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Alluxio Edge - Cache Page Read Cache Time Nanos ",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 66
+      },
+      "id": 25,
+      "panels": [],
+      "title": "Overhead",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "description": "heap.used: The amount of memory from heap area that has been used.\n\nheap.usage: The amount of memory from heap area currently used in GB.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 67
+      },
       "id": 27,
       "options": {
         "legend": {
@@ -1463,234 +1606,11 @@
           "refId": "C"
         }
       ],
-      "title": "All heap usage",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 66
-      },
-      "id": 31,
-      "panels": [],
-      "title": "Performance",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "Client.CacheHitRate: Cache hit rate: (# bytes read from cache) / (# bytes requested).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 67
-      },
-      "id": 29,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRate.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Alluxio measured hit rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "KaXNuaQ7z"
-      },
-      "description": "Client.CachePagesEvicted: Total number of pages evicted from the client cache.\n\nClient.CacheBytesEvicted: Total number of bytes evicted from the client cache.\n\nClient.CachePutEvictionErrors: Number of failures when putting cached data in the client cache due to failed eviction.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 67
-      },
-      "id": 33,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePagesEvicted.*\", job=\"trino worker\"}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesEvicted.*\", job=\"trino worker\"}",
-          "hide": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "KaXNuaQ7z"
-          },
-          "editorMode": "code",
-          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CachePutEvictionErrors.*\", job=\"trino worker\"}",
-          "hide": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "Eviction Error",
+      "title": "Alluxio Edge - All Heap Usage",
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -1699,8 +1619,8 @@
       {
         "current": {
           "selected": false,
-          "text": "Trino_Alluxio_Prometheus",
-          "value": "Trino_Alluxio_Prometheus"
+          "text": "prometheus",
+          "value": "prometheus"
         },
         "hide": 2,
         "includeAll": false,
@@ -1716,13 +1636,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
-    "to": "now"
+    "from": "2023-12-13T16:50:14.018Z",
+    "to": "2023-12-13T16:58:49.876Z"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Trino-Alluxio-Edge-Cache-Monitor",
-  "uid": "Wb8zd514kz",
-  "version": 2,
+  "title": "Alluxio-Edge-Trino-Cache-Monitor",
+  "uid": "Sb8hd614kz",
+  "version": 1,
   "weekStart": ""
 }
