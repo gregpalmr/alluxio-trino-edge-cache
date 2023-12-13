@@ -746,11 +746,48 @@ In the upper left side of the dashboard, click on the drop down menu (just to th
 
 ![alt Grafana Home Menu](images/Alluxio_Edge_Grafana_Home_Menu.png?raw=true)
 
-Then click on the "Dashboards" link to display the folders and dashboards. Then click on the "Trino-Alluxio" folder link to view the Trino-Alluxio-Edge-Cache-Monitor dashboard. Click on the link for that dashboard to view the panels.
+Then click on the "Dashboards" link to display the folders and dashboards and then click on the "Trino-Alluxio" folder link to view the Trino-Alluxio-Edge-Cache-Monitor dashboard. Click on the link for that dashboard to view the panels.
 
-![alt Grafana Home Menu](images/Alluxio-Edge-Grafana-Dashboard1.png?raw=true)
+In the Grafana dashboard, scroll down until you see the "Alluxio Edge - Cache Hit Rate" panel, which should look like the screen shot below. The Alluxio Edge Grafana metrics tell the story of what is happening with the Alluxio Edge data cache system when various Trino query jobs are executed.
 
-In the Grafana dashboard, scroll down until you see the "Alluxio Cache Hit Rate" panel, which should look like this:
+At first Alluxio Edge has no data in the cache and no cache hits or misses. Then, the first Trino query was run at 11:51:00 and that query experienced a zero cache hit rate (not surprisingly), but caused approximately 80 MB of data to be read from the MinIO under store into the Alluxio Edge cache, as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. Here is a copy of the first query statement:
+
+```
+SELECT count(*) AS No_Of_ACCTS FROM default.customer
+WHERE acctbal > 1000.00 AND acctbal < 7500.00;
+```
+
+At 11:53:30, the second Trino query was run. Because it was accessing most of the same data that the first query retrieved, it saw a cache hit rate of approximately 75% as shown in the "Cache Hit Rate" panel and the "Data Read from Cache" panel. However, because some of the query results were not already in the cache, Alluxio Edge also read some data from the MinIO under store as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. 
+
+Here is a copy of the second query statement:
+
+```
+SELECT name, mktsegment, acctbal FROM default.customer
+WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
+ORDER  BY acctbal;
+```
+
+At 11:55:00, the third Trino query was run. While the query statement was different from the previous queries, the data it needed was completely resident in the Alluxio Edge cache and it experienced a 100% cache hit rate, as shown in the "Cache Hit Rate" panel. Also, it did not cause Alluxio Edge to read any data from the MinIO under store or increase the amount of data in the cache as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.
+
+Here is a copy of the third query statement:
+
+```
+SELECT mktsegment, AVG(acctbal) FROM default.customer
+WHERE  acctbal > 3500.00 AND acctbal < 4000.00 
+GROUP  BY mktsegment, acctbal;
+```
+
+At 11:56:30, the fourth Trino query was run. This query was very different than the previous queries and it required a lot of new data that was not in the Alluxio Edge cache which resulted in decreasing cache it hit that bottomed out at under 20% as shown in the "Cache Hit Rate" panel. Of course, it also caused Alluxio to read much more data from the MinIO under store and cache that new data as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel.  If the Alluxio Edge cache was full at the time this query was run, Alluxio Edge would have had to evict some older data to accommodate this new data, but there was enough room for this new data in the cache.
+
+Here is a copy of the fourth query statement:
+```
+SELECT custkey, name, mktsegment, phone, acctbal, comment 
+FROM  default.customer
+WHERE acctbal > 3500.00 AND acctbal < 4000.00 
+ORDER BY name;
+```
+
+This is a simple example with Trino queries being run one at a time. In a real production environment, there could be hundreds of Trino jobs running concurrently and Alluxio Edge would handle all their data retrieval requests in a highly parallelized fashion with cache hits, misses, and evictions happening all at once.
 
 ![alt Alluxio Edge Grafana Cache Hit Rate](images/Alluxio_Edge_Grafana_Cache_Hit_Rate.png?raw=true)
 
