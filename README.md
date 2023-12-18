@@ -244,7 +244,7 @@ Alluxio Edge can generate metrics using a the Java management extensions (JMX). 
 ```
 cat <<EOF > config-files/alluxio/metrics.properties
 #
-# FILE:    metrics.properties Enable the Alluxio Jmx sink
+# FILE:    metrics.properties
 #
 # DESC:    This properties file enables the Alluxio Jmx sink
 #          It should be placed in: /home/trino/alluxio/conf/metrics.properties
