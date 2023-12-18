@@ -115,7 +115,7 @@ cat << EOF > config-files/alluxio/alluxio-site.properties
 # FILE: alluxio-site.properties
 #
 # DESC: This is the main Alluxio Edge properties file and should
-#      be placed in: /home/trino/alluxio/conf/
+#      be placed in: /home/trino/alluxio/conf/alluxio-site.properties
 
 # Alluxio under file system setup (MinIO)
 #
@@ -195,7 +195,7 @@ cat << EOF > config-files/alluxio/core-site.xml
   FILE: core-site.xml 
 
   DESC: This is the Alluxio Edge core-site.xml file and should be
-        placed in: /etc/trino/
+        placed in: /home/trino/alluxio/conf/core-site.xml
 -->
 
 <configuration>
@@ -258,7 +258,7 @@ cat <<EOF > config-files/trino/catalog/minio.properties
 # FILE: minio.properties
 #
 # DESC: This is the Trino catalog config file for the MinIO S3 store. 
-#       It should be placed in: /etc/trino/catalog/
+#       It should be placed in: /etc/trino/catalog/minio.properties
 # 
 connector.name=hive
 hive.s3-file-system-type=HADOOP_DEFAULT
@@ -280,7 +280,7 @@ cat <<EOF > config-files/trino/jmx_export_config.yaml
 # FILE: jmx_export_config.yaml
 #
 # DESC: This is the Alluxio Edge Java JMX metrics export file. It should
-#       be placed in: /etc/trino/
+#       be placed in: /etc/trino/jmx_export_config.yaml
 #
 ---
 startDelaySeconds: 0
@@ -303,7 +303,7 @@ cat <<EOF > config-files/trino/jvm.config
 # FILE: jvm.config
 #
 # DESC: This is the Trino Java JVM configuration script and should be
-#       placed in: /etc/trino/
+#       placed in: /etc/trino/jvm.config
 #
 
 -server
