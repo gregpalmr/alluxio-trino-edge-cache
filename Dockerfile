@@ -6,8 +6,9 @@
 # NOTE: Remove the escape chars (${...}) if manually copying and pasting
 #       (that is, not using the "cat <<EOF > Dockerfile" command)
 
-ARG TRINO_VERSION=403
+#ARG TRINO_VERSION=403
 #ARG TRINO_VERSION=418
+ARG TRINO_VERSION=422
 
 FROM docker.io/trinodb/trino:${TRINO_VERSION}
 
@@ -43,6 +44,8 @@ COPY jars/jmx_prometheus_javaagent-${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/tri
 
 # Copy the Trino config files to the Trino etc dir
 COPY config-files/trino/catalog/minio.properties /etc/trino/catalog
+COPY config-files/trino/catalog/deltalake.properties /etc/trino/catalog
+COPY config-files/trino/catalog/iceberg.properties /etc/trino/catalog
 COPY config-files/trino/jvm.config               /etc/trino
 COPY config-files/alluxio/core-site.xml          /etc/trino
 COPY config-files/trino/jmx_export_config.yaml   /etc/trino
