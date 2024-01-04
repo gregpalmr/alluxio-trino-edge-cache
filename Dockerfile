@@ -6,9 +6,7 @@
 # NOTE: Remove the escape chars (${...}) if manually copying and pasting
 #       (that is, not using the "cat <<EOF > Dockerfile" command)
 
-#ARG TRINO_VERSION=403
-#ARG TRINO_VERSION=418
-ARG TRINO_VERSION=422
+ARG TRINO_VERSION=431
 
 FROM docker.io/trinodb/trino:${TRINO_VERSION}
 
