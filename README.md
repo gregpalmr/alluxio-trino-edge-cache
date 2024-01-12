@@ -269,6 +269,9 @@ cat <<EOF > config-files/trino/catalog/minio.properties
 connector.name=hive
 hive.s3-file-system-type=HADOOP_DEFAULT
 hive.metastore.uri=thrift://hive-metastore:9083
+hive.s3.endpoint=http://minio:9000
+hive.s3.aws-access-key=minio
+hive.s3.aws-secret-key=minio123
 hive.non-managed-table-writes-enabled=true
 hive.s3select-pushdown.enabled=true
 hive.storage-format=ORC
