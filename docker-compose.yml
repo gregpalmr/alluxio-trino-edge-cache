@@ -150,7 +150,7 @@ services:
       - 9090:9090
     volumes:
       - ./config-files/prometheus:/etc/prometheus
-      - prometheus_data:/prometheus
+      - prometheus-data:/prometheus
     command: --web.enable-lifecycle --log.level=debug --config.file=/etc/prometheus/prometheus.yaml
 
   grafana:
@@ -178,7 +178,7 @@ volumes:
     driver: local
   trino-worker1-data:
     driver: local
-  prometheus_data:
+  prometheus-data:
     driver: local
 
 networks:
