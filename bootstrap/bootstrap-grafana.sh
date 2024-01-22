@@ -16,7 +16,8 @@ cp /tmp/config-files/grafana/provisioning_datasources_default.yaml /etc/grafana/
 cp /tmp/config-files/grafana/provisioning_datasources_datasources.yaml /etc/grafana/provisioning/datasources/datasources.yaml
 cp /tmp/config-files/grafana/provisioning_dashboards_default.yaml /etc/grafana/provisioning/dashboards/default.yaml
 mkdir -p /var/lib/grafana/trino_alluxio_dashboards
-cp /tmp/config-files/grafana/trino_alluxio_edge_dashboard.json /var/lib/grafana/trino_alluxio_dashboards/
+#cp /tmp/config-files/grafana/trino_alluxio_edge_dashboard.json /var/lib/grafana/trino_alluxio_dashboards/
+cp /tmp/config-files/grafana/trino_alluxio_dashboard.json /var/lib/grafana/trino_alluxio_dashboards/
 chown -R grafana /usr/share/grafana/conf/provisioning/
 chown -R grafana /var/lib/grafana/dashboards/
 chown -R grafana /var/lib/grafana/trino_alluxio_dashboards/
