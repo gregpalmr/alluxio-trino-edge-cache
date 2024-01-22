@@ -755,9 +755,9 @@ In the upper left side of the dashboard, click on the drop down menu (just to th
 
 ![alt Grafana Home Menu](images/Alluxio_Edge_Grafana_Home_Menu.png?raw=true)
 
-Then click on the "Dashboards" link to display the folders and dashboards and then click on the "Trino-Alluxio" folder link to view the Trino-Alluxio-Edge-Cache-Monitor dashboard. Click on the link for that dashboard to view the panels.
+Then click on the "Dashboards" link to display the folders and dashboards and then click on the "Trino_Alluxio" folder link to view the "Alluxio Edge Dashboard" dashboard. Click on the link for that dashboard to view the panels.
 
-In the Grafana dashboard, scroll down until you see the "Alluxio Edge - Cache Hit Rate" panel, which should look like the screen shot below. The Alluxio Edge Grafana metrics tell the story of what is happening with the Alluxio Edge data cache system when various Trino query jobs are executed.
+At the top of the Grafana dashboard, you see the "Alluxio Edge - Cache Hit Rate" panel, which should look like the screen shot below. The Alluxio Edge Grafana metrics tell the story of what is happening with the Alluxio Edge data cache system when various Trino query jobs are executed.
 
 At first Alluxio Edge had no data in the cache and no cache hits or misses. Then, the first Trino query was run at 11:51:00 and that query experienced a zero cache hit rate (not surprisingly), but caused approximately 80 MB of data to be read from the MinIO under store into the Alluxio Edge cache, as shown in the "Data Read from UFS" panel and the "Cache Space Used" panel. Here is a copy of the first query statement:
 
