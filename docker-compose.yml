@@ -9,9 +9,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 6G
+          memory: 8G
         reservations:
-          memory: 6G
+          memory: 8G
     networks:
       custom:
         ipv4_address: 172.26.0.10
@@ -37,9 +37,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 6G
+          memory: 8G
         reservations:
-          memory: 6G
+          memory: 8G
     networks:
       custom:
         ipv4_address: 172.26.0.11
