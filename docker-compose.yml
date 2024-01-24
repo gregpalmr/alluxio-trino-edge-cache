@@ -8,10 +8,8 @@ services:
     container_name: trino-coordinator
     deploy:
       resources:
-        limits:
-          memory: 8G
         reservations:
-          memory: 8G
+          memory: 6G
     networks:
       custom:
         ipv4_address: 172.26.0.10
@@ -36,10 +34,8 @@ services:
     shm_size: '1.5gb'
     deploy:
       resources:
-        limits:
-          memory: 8G
         reservations:
-          memory: 8G
+          memory: 6G
     networks:
       custom:
         ipv4_address: 172.26.0.11
@@ -101,6 +97,8 @@ services:
     networks:
       custom:
         ipv4_address: 172.26.0.5
+    expose:
+      - 9000
     ports:
       - '9000:9000'
       - '9001:9001'
