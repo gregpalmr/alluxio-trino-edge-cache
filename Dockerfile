@@ -41,7 +41,7 @@ COPY jars/alluxio-underfs-emon-s3a-${ALLUXIO_VERSION}.jar          /home/trino/a
 COPY jars/jmx_prometheus_javaagent-${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
 
 # Copy the Trino config files to the Trino etc dir
-COPY config-files/trino/catalog/minio.properties /etc/trino/catalog
+COPY config-files/trino/catalog/hive.properties /etc/trino/catalog
 COPY config-files/trino/catalog/deltalake.properties /etc/trino/catalog
 COPY config-files/trino/catalog/iceberg.properties /etc/trino/catalog
 COPY config-files/trino/jvm.config               /etc/trino

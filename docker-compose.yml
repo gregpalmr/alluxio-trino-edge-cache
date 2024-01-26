@@ -5,7 +5,7 @@ services:
   trino-coordinator:
     image: mytrino/trino-alluxio-edge
     hostname: trino-coordinator
-    container_name: trino-coordinator
+    container_name: trino-coordinator-dzi
     deploy:
       resources:
         reservations:
@@ -30,7 +30,7 @@ services:
   trino-worker1:
     image: mytrino/trino-alluxio-edge
     hostname: trino-worker1
-    container_name: trino-worker1
+    container_name: trino-worker1-dzi
     shm_size: '1.5gb'
     deploy:
       resources:
@@ -52,48 +52,63 @@ services:
         echo "discovery.uri=http://trino-coordinator:8080" >> /etc/trino/config.properties
         /usr/lib/trino/bin/run-trino
 
-  mariadb:
-    image: 'mariadb:10.4'
-    hostname: mariadb
-    container_name: mariadb
-    networks:
-      custom:
-        ipv4_address: 172.26.0.3
-    ports:
-      - '3306:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: metastore_db
-    volumes:
-      - mariadb-data:/var/lib/mysql
-
   hive-metastore:
-    image: 'bitsondatadev/hive-metastore:latest'
+    image: docker.io/sslhep/hive-metastore:3.1.3
     hostname: hive-metastore
-    container_name: hive-metastore
+    container_name: hive-metastore-dzi
+    user: root
     networks:
       custom:
         ipv4_address: 172.26.0.4
+    environment:
+      - SERVICE_NAME=metastore
+    expose:
+      - 9083
     ports:
-      - '9083:9083' # Metastore Thrift
+      - 9083:9083
     volumes:
       - ./config-files:/tmp/config-files:ro
-    environment:
-      METASTORE_DB_HOSTNAME: mariadb
-    depends_on:
-      - mariadb
-      - minio
+      - hive-metastore-data:/data
     entrypoint: >
       /bin/sh -c "
-        cp /tmp/config-files/hive/metastore-site.xml /opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml
+        cp /tmp/config-files/hive/metastore-site.xml /opt/hive/conf/metastore-site.xml
+        if [ -d /opt/hive/metastore_db ]; then
+          SKIP_SCHEMA_INIT="true"
+        fi
         /entrypoint.sh
+        sleep infinity
         "
+  jupyter-lab:
+    image: jupyter/pyspark-notebook:latest
+    hostname: jupyter-lab
+    container_name: jupyter-lab-dzi
+    user: root
+    networks:
+      custom:
+        ipv4_address: 172.26.0.13
+    ports:
+      - 8888:8888
+    volumes:
+      - jupyter-lab-data:/home/jovyan/work
+    entrypoint: >
+      /bin/sh -c "
+        if [ -d /tmp/local-files/ ] && [ -f /tmp/local-files/hadoop-aws-3.3.4.jar ]; then
+          cp /tmp/local-files/hadoop-aws-3.3.4.jar /usr/local/spark/jars/ && \
+          cp /tmp/local-files/aws-java-sdk-bundle-1.12.262.jar /usr/local/spark/jars/;
+        else
+          wget -q --directory-prefix=/usr/local/spark/jars/ https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar && \
+          wget -q --directory-prefix=/usr/local/spark/jars/ https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar;
+        fi
+        mkdir -p /home/jovyan/.jupyter/;
+        echo 'c.ServerApp.password = "argon2:$$argon2id$$v=19$$m=10240,t=10,p=8$$kOWx6DB2+ax213XlHzCLBw$$Pw+uRsVfRzqVn4Zs7HphOZgGdPHIPxj\/+ZFWT\/6rxDI"' > /home/jovyan/.jupyter/jupyter_server_config.py;
+        tini -g -- start-notebook.py;
+        tail -f /dev/null
+        "
+
   minio:
     image: 'minio/minio:latest'
     hostname: minio
-    container_name: minio
+    container_name: minio-dzi
     networks:
       custom:
         ipv4_address: 172.26.0.5
@@ -111,7 +126,7 @@ services:
 
   minio-create-buckets:
     image: minio/mc:latest
-    container_name: minio-create-buckets
+    container_name: minio-create-buckets-dzi
     networks:
       custom:
         ipv4_address: 172.26.0.6
@@ -125,10 +140,10 @@ services:
       sleep 5;
       /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
       if [ \"`/usr/bin/mc ls myminio`\" == \"\" ]; then 
-         echo \"Creating bucket myminio/hive\" && \
-         /usr/bin/mc mb myminio/hive && \
-         /usr/bin/mc policy download myminio/hive && \
-         /usr/bin/mc cp /etc/motd myminio/hive/warehouse/.temp_file; 
+         echo \"Creating bucket myminio/minio-bucket-1\" && \
+         /usr/bin/mc mb myminio/minio-bucket-1 && \
+         /usr/bin/mc policy download myminio/minio-bucket-1 && \
+         /usr/bin/mc cp /etc/motd myminio/minio-bucket-1/user/hive/warehouse/.temp_file; 
       else 
          echo \"Bucket myminio/hive already exists, skipping create\"; 
       fi;
@@ -136,7 +151,7 @@ services:
       "
   prometheus:
     image: prom/prometheus:v2.22.2
-    container_name: prometheus
+    container_name: prometheus-dzi
     hostname: prometheus
     domainname: docker.com
     networks:
@@ -156,7 +171,7 @@ services:
     networks:
       custom:
         ipv4_address: 172.26.0.9
-    container_name: grafana
+    container_name: grafana-dzi
     hostname: grafana
     domainname: docker.com
     ports:
@@ -175,6 +190,10 @@ volumes:
   trino-coordinator-data:
     driver: local
   trino-worker1-data:
+    driver: local
+  hive-metastore-data:
+    driver: local
+  jupyter-lab-data:
     driver: local
   prometheus-data:
     driver: local

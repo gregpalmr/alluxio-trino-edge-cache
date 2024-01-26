@@ -259,12 +259,12 @@ EOF
 Since we are using MinIO as our persistent object store, configure a Trino catalog to point to Minio using the commands:
 
 ```
-cat <<EOF > config-files/trino/catalog/minio.properties
+cat <<EOF > config-files/trino/catalog/hive.properties
 #
-# FILE: minio.properties
+# FILE: hive.properties
 #
 # DESC: This is the Trino catalog config file for the MinIO S3 store. 
-#       It should be placed in: /etc/trino/catalog/minio.properties
+#       It should be placed in: /etc/trino/catalog/hive.properties
 # 
 connector.name=hive
 hive.s3-file-system-type=HADOOP_DEFAULT
@@ -403,7 +403,7 @@ COPY jars/alluxio-underfs-emon-s3a-\${ALLUXIO_VERSION}.jar          /home/trino/
 COPY jars/jmx_prometheus_javaagent-\${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
 
 # Copy the Trino config files to the Trino etc dir
-COPY config-files/trino/catalog/minio.properties /etc/trino/catalog
+COPY config-files/trino/catalog/hive.properties /etc/trino/catalog
 COPY config-files/trino/jvm.config               /etc/trino
 COPY config-files/alluxio/core-site.xml          /etc/trino
 COPY config-files/trino/jmx_export_config.yaml   /etc/trino
@@ -675,7 +675,7 @@ c. Configuring Trino Catalog integration to use Alluxio Edge
 
 The Trino hive catalog must be modified to point to the cores-site.xml file created above in step 2.b. In the Trino catalog's hive.properties file, you can reference the core-site.xml file containing the Alluxio Edge configuration settings. In this case, the Trino catalog configuration file is located at:
 
-     /etc/trino/catalog/minio.properties
+     /etc/trino/catalog/hive.properties
 
 And the line that is added to point to the Alluxio Edge configured core-site.xml file is:
 
