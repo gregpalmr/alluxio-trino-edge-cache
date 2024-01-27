@@ -500,7 +500,7 @@ The TPC/H Trino catalog has been pre-configured for this Trino instance and ther
       CREATE TABLE default.customer
       WITH (
         format = 'ORC',
-        external_location = 's3a://hive/warehouse/customer/'
+        external_location = 's3a://minio-bucket-1/user/hive/warehouse/customer/'
       ) 
       AS SELECT * FROM tpch.sf100.customer;
 
