@@ -78,33 +78,22 @@ services:
         /entrypoint.sh
         sleep infinity
         "
-  jupyter-lab:
-    image: jupyter/pyspark-notebook:spark-3.2.1
-      # NOTE: For Spark 3.2.1, use Delta Lake version 2.0.x (i.e !pip install delta-spark==2.0.1)
-    hostname: jupyter-lab
-    container_name: jupyter-lab-dzi
-    user: root
+
+  spark:
+    image: docker.io/bitnami/spark:3.2.2
+    hostname: spark
+    container_name: spark-dzi
     networks:
       custom:
-        ipv4_address: 172.26.0.13
+        ipv4_address: 172.26.0.14
+    environment:
+      - SPARK_MASTER_HOST=localhost
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8081
     ports:
-      - 8888:8888
-    volumes:
-      - jupyter-lab-data:/home/jovyan/work
-    entrypoint: >
-      /bin/sh -c "
-        if [ -d /tmp/local-files/ ] && [ -f /tmp/local-files/hadoop-aws-3.3.4.jar ]; then
-          cp /tmp/local-files/hadoop-aws-3.3.4.jar /usr/local/spark/jars/ && \
-          cp /tmp/local-files/aws-java-sdk-bundle-1.12.262.jar /usr/local/spark/jars/;
-        else
-          wget -q --directory-prefix=/usr/local/spark/jars/ https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar && \
-          wget -q --directory-prefix=/usr/local/spark/jars/ https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar;
-        fi
-        mkdir -p /home/jovyan/.jupyter/;
-        echo 'c.ServerApp.password = "argon2:$$argon2id$$v=19$$m=10240,t=10,p=8$$kOWx6DB2+ax213XlHzCLBw$$Pw+uRsVfRzqVn4Zs7HphOZgGdPHIPxj\/+ZFWT\/6rxDI"' > /home/jovyan/.jupyter/jupyter_server_config.py;
-        tini -g -- start-notebook.py;
-        tail -f /dev/null
-        "
+      - 8081:8081
+    expose:
+      - 7077
 
   minio:
     image: 'minio/minio:latest'
