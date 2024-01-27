@@ -72,14 +72,15 @@ services:
     entrypoint: >
       /bin/sh -c "
         cp /tmp/config-files/hive/metastore-site.xml /opt/hive/conf/metastore-site.xml
-        if [ -d /opt/hive/metastore_db ]; then
+        if [ ! -d /opt/hive/metastore_db ]; then
           SKIP_SCHEMA_INIT="true"
         fi
         /entrypoint.sh
         sleep infinity
         "
   jupyter-lab:
-    image: jupyter/pyspark-notebook:latest
+    image: jupyter/pyspark-notebook:spark-3.2.1
+      # NOTE: For Spark 3.2.1, use Delta Lake version 2.0.x (i.e !pip install delta-spark==2.0.1)
     hostname: jupyter-lab
     container_name: jupyter-lab-dzi
     user: root
