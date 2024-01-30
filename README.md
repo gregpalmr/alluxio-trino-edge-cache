@@ -460,27 +460,29 @@ The command will create the network object and the docker volumes, then it will 
      Creating volume "alluxio-trino-edge-cache_minio-data" with local driver
      Creating volume "alluxio-trino-edge-cache_trino-coordinator-data" with local driver
      Creating volume "alluxio-trino-edge-cache_trino-worker1-data" with local driver
-     Creating volume "alluxio-trino-edge-cache_prometheus_data" with local driver
-     Creating trino-coordinator ... done
-     Creating trino-worker1     ... done
-     Creating prometheus           ... done
-     Creating minio             ... done
-     Creating mariadb              ... done
-     Creating grafana           ... done
-     Creating minio-create-buckets ... done
-     Creating hive-metastore       ... done
-
+     Creating volume "alluxio-trino-edge-cache_hive-metastore-data" with local driver
+     Creating volume "alluxio-trino-edge-cache_jupyter-lab-data" with local driver
+     Creating volume "alluxio-trino-edge-cache_prometheus-data" with local driver
+     Creating prometheus-dzi           ... done
+     Creating trino-worker1-dzi        ... done
+     Creating trino-coordinator-dzi    ... done
+     Creating minio-dzi             ... done
+     Creating grafana-dzi           ... done
+     Creating hive-metastore-dzi       ... done
+     Creating spark-dzi                ... done
+     Creating minio-create-buckets-dzi ... done
+     
 If you experience errors for not enough CPU, Memory or disk resources, use your Docker console to increase the resource allocations. You may need up to 4 CPUs, 8 GB of Memory and 200 GB of disk image space in your Docker resource settings.
 
 ### Step 7. Open two shell sessions 
 
-Open two shell sessions - one into the trino-coordinator Docker container and one into the trino-worker1 Docker container. Run the following command to launch a shell session in the trino-coordinator container:
+Open two shell sessions - one into the trino-coordinator-dzi Docker container and one into the trino-worker1-dzi Docker container. Run the following command to launch a shell session in the trino-coordinator-dzi container:
 
-     docker exec -it trino-coordinator bash
+     docker exec -it trino-coordinator-dzi bash
 
-Run the following command to launch a shell session in the trino-worker1 container:
+Run the following command to launch a shell session in the trino-worker1-dzi container:
 
-     docker exec -it trino-worker1 bash
+     docker exec -it trino-worker1-dzi bash
 
 Your shell session windows should look like this:
 
