@@ -804,7 +804,80 @@ This is a simple example with Trino queries being run one at a time. In a real p
 
 ### Step 11. Explore the Alluxio Edge Dashboard configuration
 
-TBD
+Trino servers expose Trino metrics via the Java Management Extensions (JMX), however most customers use Prometheus as a time-series database to store metrics over a longer period. Alluxio Edge can forward performance and usage metrics to Prometheus via a JMX to Prometheus exporter component. To configure Alluxio Edge to send its metrics to Prometheus, the following tasks should be performed:
+
+a. Configure Alluxio Edge to generate JMX events
+
+In the Alluxio Edge "metrics.properties" file, setup the JmxSink so that Alluxio Edge will integrate with the same Jmx configuration that Trino already uses.  Here is the single line entry needed in the Alluxio Edge metrics.properties file:
+
+     sink.jmx.class=alluxio.metrics.sink.JmxSink
+
+In the Trino /etc/trino/jvm.config file, you must point to the Alluxio Edge metrics.properties file, like this:
+
+    -Dalluxio.metrics.conf.file=/home/trino/alluxio/conf/metrics.properties
+
+b. Download the jmx_prometheus_javaagent jar file
+
+Download the jmx_prometheus_javaagent jar file to each Trino coordinator and worker node. The Java agent jar file can be downloaded from here: 
+
+     https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.20.0/jmx_prometheus_javaagent-0.20.0.jar
+
+c. Configure the Jmx to Prometheus exporter
+
+To configure the jmx_prometheus_javaagent Java agent, create a file on each Trino coordinator and worker node named:
+
+     /etc/trino/jmx_export_config.yaml
+
+In that file, put the following settings:
+
+     ---
+     startDelaySeconds: 0
+     ssl: false
+     global:
+       scrape_interval:     15s
+       evaluation_interval: 15s
+     rules:
+     - pattern: ".*"
+
+d. Enable the Java agent to run in the Trino server processes
+
+To get the jmx_prometheus_javaagent Java agent to expose metrics on a specific network port, add this argument to the Trino Java JVM by adding this option to the /etc/trino/jvm.config file:
+
+     -javaagent:/home/trino/alluxio/lib/jmx_prometheus_javaagent-0.20.0.jar=9696:/etc/trino/jmx_export_config.yaml
+
+e. Configure the Prometheus server
+
+In your Prometheus server, configure the "scrape" settings in the prometheus.yaml file to read the Alluxio Edge metrics being exposed via the Jxm to Prometheus exporter Java agent on port 9696 (or what ever port you configure in the -javaagent JVM argument). Setup the prometheus.yaml file like this:
+
+     # Global configuration
+     global:
+       scrape_interval: 15s     # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+       evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+       # scrape_timeout is set to the global default (10s).
+      
+     # Alertmanager configuration
+     alerting:
+       alertmanagers:
+       - static_configs:
+         - targets:
+         # - alertmanager:9093
+     
+     # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+     rule_files:
+       # - "first_rules.yml"
+       # - "second_rules.yml"
+     
+     # A scrape configuration containing exactly one endpoint to scrape:
+     # Here it's Prometheus itself.
+     scrape_configs:
+       - job_name: 'trino master'
+         metrics_path: '/metrics/prometheus/'
+         static_configs:
+         - targets: [ 'trino-coordinator:9696' ]
+       - job_name: 'trino worker'
+         metrics_path: '/metrics/prometheus/'
+         static_configs:
+         - targets: [ 'trino-worker1:9696','trino-worker2:9696','trino-worker3:9696' ]
 
 --
 
