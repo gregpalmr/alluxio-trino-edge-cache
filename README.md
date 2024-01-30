@@ -492,7 +492,7 @@ Your shell session windows should look like this:
 
 a. In the trino-coordinator shell session window, start a Trino command line session:
 
-     trino --catalog minio --debug
+     trino --catalog hive --debug
 
 The TPC/H Trino catalog has been pre-configured for this Trino instance and there is a table named "tpch.sf100.customer" that contains about 15 million rows. We will use that table to create a new table in the local MinIO storage environment. Run the following Trino CREATE TABLE command:
 
