@@ -806,7 +806,7 @@ This is a simple example with Trino queries being run one at a time. In a real p
 
 Trino servers expose Trino metrics via the Java Management Extensions (JMX), however most customers use Prometheus as a time-series database to store metrics over a longer period. Alluxio Edge can forward performance and usage metrics to Prometheus via a JMX to Prometheus exporter component. To configure Alluxio Edge to send its metrics to Prometheus, the following tasks should be performed:
 
-a. Configure Alluxio Edge to generate JMX events
+#### a. Configure Alluxio Edge to generate JMX events
 
 In the Alluxio Edge "metrics.properties" file, setup the JmxSink so that Alluxio Edge will integrate with the same Jmx configuration that Trino already uses.  Here is the single line entry needed in the Alluxio Edge metrics.properties file:
 
@@ -816,13 +816,13 @@ In the Trino /etc/trino/jvm.config file, you must point to the Alluxio Edge metr
 
     -Dalluxio.metrics.conf.file=/home/trino/alluxio/conf/metrics.properties
 
-b. Download the jmx_prometheus_javaagent jar file
+#### b. Download the jmx_prometheus_javaagent jar file
 
 Download the jmx_prometheus_javaagent jar file to each Trino coordinator and worker node. The Java agent jar file can be downloaded from here: 
 
      https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.20.0/jmx_prometheus_javaagent-0.20.0.jar
 
-c. Configure the Jmx to Prometheus exporter
+#### c. Configure the Jmx to Prometheus exporter
 
 To configure the jmx_prometheus_javaagent Java agent, create a file on each Trino coordinator and worker node named:
 
@@ -839,13 +839,13 @@ In that file, put the following settings:
      rules:
      - pattern: ".*"
 
-d. Enable the Java agent to run in the Trino server processes
+#### d. Enable the Java agent to run in the Trino server processes
 
 To get the jmx_prometheus_javaagent Java agent to expose metrics on a specific network port, add this argument to the Trino Java JVM by adding this option to the /etc/trino/jvm.config file:
 
      -javaagent:/home/trino/alluxio/lib/jmx_prometheus_javaagent-0.20.0.jar=9696:/etc/trino/jmx_export_config.yaml
 
-e. Configure the Prometheus server
+#### e. Configure the Prometheus server
 
 In your Prometheus server, configure the "scrape" settings in the prometheus.yaml file to read the Alluxio Edge metrics being exposed via the Jxm to Prometheus exporter Java agent on port 9696 (or what ever port you configure in the -javaagent JVM argument). Setup the prometheus.yaml file like this:
 
