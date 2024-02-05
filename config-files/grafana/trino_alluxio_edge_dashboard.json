@@ -90,7 +90,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum(floor({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheState_.*_Count\"})) / 2",
+          "expr": "sum(floor({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheState_Count\"})) / 2",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -159,7 +159,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheSpaceUsed_.*_Value\"})",
+          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheSpaceUsed_Value\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -343,7 +343,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum(rate({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache_.*_Count\"}[$__rate_interval]))",
+          "expr": "sum(rate({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesReadCache_Count\"}[$__rate_interval]))",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -360,7 +360,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "\nsum(rate({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesRequestedExternal_.*_Count\"}[$__rate_interval]))",
+          "expr": "\nsum(rate({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesRequestedExternal_Count\"}[$__rate_interval]))",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": false,
@@ -783,7 +783,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_.*_Count\"})",
+          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -879,7 +879,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesExternalRequests_.*_Count\"})",
+          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheExternalRequests_Count\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -944,7 +944,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_.*_Count\"})",
+          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -1006,7 +1006,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesExternalRequests_.*_Count\"})",
+          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheExternalRequests_Count\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -1071,7 +1071,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_.*_Count\"})",
+          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -1124,23 +1124,6 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "F",
-          "useBackend": false
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "my_unique_uid"
-          },
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheBytesExternalRequests_.*_Count\"})",
-          "fullMetaSearch": false,
-          "hide": true,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "G",
           "useBackend": false
         }
       ],
@@ -1233,7 +1216,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum(rate({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_.*_Count\"}[$__rate_interval]))",
+          "expr": "sum(rate({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"}[$__rate_interval]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1676,7 +1659,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum by(app) (increase({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheGetErrors_.*_Count\"}[$__rate_interval]))",
+          "expr": "sum by(app) (increase({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheGetErrors_Count\"}[$__rate_interval]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -2046,7 +2029,7 @@
           "useBackend": false
         }
       ],
-      "title": "Os Open File Count",
+      "title": "OS Open File Count",
       "type": "timeseries"
     },
     {
@@ -2442,7 +2425,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -2450,13 +2433,13 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Alluxio Edge Dashboard",
-  "uid": "d6d4c745-d668-4ef2-9e09-3d08062b9210",
+  "title": "Alluxio Edge Dashboard v1.0",
+  "uid": "d9d4c745-d768-5ef2-9e09-3d02362b9210",
   "version": 1,
   "weekStart": ""
 }
