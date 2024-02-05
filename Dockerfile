@@ -3,14 +3,17 @@
 #
 # UASGE: docker build -t mytrino/trino-alluxio-edge .
 #
-# NOTE: Remove the escape chars (${...}) if manually copying and pasting
-#       (that is, not using the "cat <<EOF > Dockerfile" command)
+# NOTE 1: Remove the escape chars (${...}) if manually copying and pasting
+#         (that is, not using the "cat <<EOF > Dockerfile" command)
+# NOTE 2: Alluxio Edge currently works with Java 17. Trino 431 is
+#         the last Trino release that uses Java 17 as later releases use 
+#         Java 21. This Dockerfile is setup to use the Java 17 docker image.
 
-ARG TRINO_VERSION=431
+ARG TRINO_VERSION=431       # Ver 431 is the last Trino version to use Java 17
 
 FROM docker.io/trinodb/trino:${TRINO_VERSION}
 
-ARG ALLUXIO_VERSION=304-SNAPSHOT
+ARG ALLUXIO_VERSION=3.x-4.0.0-SNAPSHOT
 ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0   
 
 # Create Alluxio Home
