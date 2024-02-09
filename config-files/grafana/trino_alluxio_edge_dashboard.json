@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -190,14 +190,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "orange",
-                "value": 70
-              },
-              {
-                "color": "red",
-                "value": 85
               }
             ]
           },
@@ -729,7 +721,7 @@
       },
       "id": 4,
       "panels": [],
-      "title": "Cost Saving",
+      "title": "AWS S3 Storage API Cost Savings",
       "type": "row"
     },
     {
@@ -757,7 +749,7 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
+        "w": 9,
         "x": 0,
         "y": 22
       },
@@ -783,7 +775,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"})",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"}",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -879,7 +871,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheExternalRequests_Count\"})",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheExternalRequests_Count\"}",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -890,7 +882,7 @@
           "useBackend": false
         }
       ],
-      "title": "AWS S3 API Cost - Without Alluxio Edge",
+      "title": "S3 API Cost - Without Alluxio Edge",
       "type": "gauge"
     },
     {
@@ -918,8 +910,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 6,
+        "w": 9,
+        "x": 9,
         "y": 22
       },
       "id": 47,
@@ -944,7 +936,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"})",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"}",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -1017,7 +1009,7 @@
           "useBackend": false
         }
       ],
-      "title": "AWS S3 API Cost - With Alluxio Edge",
+      "title": "S3 API Cost - With Alluxio Edge",
       "type": "gauge"
     },
     {
@@ -1045,9 +1037,9 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 22
+        "w": 9,
+        "x": 0,
+        "y": 29
       },
       "id": 48,
       "options": {
@@ -1071,7 +1063,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum({__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"})",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"}",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -1127,7 +1119,123 @@
           "useBackend": false
         }
       ],
-      "title": "AWS S3 API Cost Saving With Alluxio Edge",
+      "title": "S3 API Cost Savings With Alluxio Edge",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "KaXNuaQ7z"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 9,
+        "y": 29
+      },
+      "id": 52,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.0.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "my_unique_uid"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheHitRequests_Count\"}",
+          "fullMetaSearch": false,
+          "hide": true,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "my_unique_uid"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "{__name__=~\"alluxio_shaded_client_org_alluxio_Client_CacheExternalRequests_Count\"}",
+          "fullMetaSearch": false,
+          "hide": true,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "($A + $B) / 1000 * 0.0004",
+          "hide": true,
+          "refId": "C",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "($B/ 1000 * 0.0004)",
+          "hide": true,
+          "refId": "D",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "1 - $D / $C ",
+          "hide": false,
+          "refId": "E",
+          "type": "math"
+        }
+      ],
+      "title": "S3 API Cost Savings With Alluxio Edge - %",
       "type": "gauge"
     },
     {
@@ -1183,7 +1291,7 @@
         "h": 10,
         "w": 18,
         "x": 0,
-        "y": 29
+        "y": 36
       },
       "id": 30,
       "options": {
@@ -1235,7 +1343,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 46
       },
       "id": 2,
       "panels": [],
@@ -1309,7 +1417,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 40
+        "y": 47
       },
       "id": 16,
       "options": {
@@ -1413,7 +1521,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 40
+        "y": 47
       },
       "id": 17,
       "options": {
@@ -1537,7 +1645,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 40
+        "y": 47
       },
       "id": 12,
       "options": {
@@ -1636,7 +1744,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 48
+        "y": 55
       },
       "id": 11,
       "options": {
@@ -1678,7 +1786,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 63
       },
       "id": 19,
       "panels": [],
@@ -1749,7 +1857,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 57
+        "y": 64
       },
       "id": 18,
       "options": {
@@ -1873,7 +1981,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 57
+        "y": 64
       },
       "id": 21,
       "options": {
@@ -1995,7 +2103,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 57
+        "y": 64
       },
       "id": 22,
       "options": {
@@ -2038,7 +2146,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 65
+        "y": 72
       },
       "id": 3,
       "panels": [],
@@ -2090,8 +2198,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2106,7 +2213,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 66
+        "y": 73
       },
       "id": 6,
       "options": {
@@ -2184,8 +2291,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2200,7 +2306,7 @@
         "h": 6,
         "w": 6,
         "x": 6,
-        "y": 66
+        "y": 73
       },
       "id": 8,
       "options": {
@@ -2278,8 +2384,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2294,7 +2399,7 @@
         "h": 6,
         "w": 6,
         "x": 12,
-        "y": 66
+        "y": 73
       },
       "id": 9,
       "options": {
@@ -2372,8 +2477,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2388,7 +2492,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 72
+        "y": 79
       },
       "id": 7,
       "options": {
@@ -2438,7 +2542,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Alluxio Edge Dashboard v1.0",
+  "title": "Alluxio Edge Dashboard v1.1",
   "uid": "d9d4c745-d768-5ef2-9e09-3d02362b9210",
   "version": 1,
   "weekStart": ""
