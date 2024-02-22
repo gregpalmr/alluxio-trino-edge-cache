@@ -162,8 +162,6 @@ If you were going to use AWS S3 buckets as your persistent under store, you woul
      s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
      alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1  
 
-If you were going to use Hadoop HDFS as your persistent under store, you would include a section like this in the properties file:
-
 If you were to change where Alluxio Edge stores cache files, you could replace the "cache on client" section of the properties file like this example, where there are two NVMe volumes of different sizes available:
 
      # Enable edge cache on client (with 2 NVMe volumes)
