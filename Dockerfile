@@ -13,7 +13,6 @@ ARG TRINO_VERSION=431       # Ver 431 is the last Trino version to use Java 17
 
 FROM docker.io/trinodb/trino:${TRINO_VERSION}
 
-ARG ALLUXIO_VERSION=3.x-4.0.0-SNAPSHOT
 ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0   
 
 # Create Alluxio Home
@@ -29,16 +28,13 @@ COPY config-files/alluxio/metrics.properties      /home/trino/alluxio/conf
 RUN find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
 
 # Copy the Alluxio Edge client jar file to the Trino catalog dirs
-COPY jars/alluxio-emon-${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hive
-COPY jars/alluxio-emon-${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hudi
-COPY jars/alluxio-emon-${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/delta-lake  
-COPY jars/alluxio-emon-${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/iceberg
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/hive
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/hudi
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/delta-lake  
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/iceberg
 
 # Copy the Alluxio Edge under store jar file to the Trino lib dir 
-COPY jars/alluxio-underfs-emon-s3a-${ALLUXIO_VERSION}.jar          /home/trino/alluxio/lib
-#COPY jars/alluxio-underfs-emon-hadoop-3.3-${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
-#COPY jars/alluxio-underfs-emon-hadoop-2.10-${ALLUXIO_VERSION}.jar /home/trino/alluxio/lib
-#COPY jars/alluxio-underfs-emon-hadoop-2.7-${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
+COPY jars/alluxio-underfs-emon-s3a-*.jar          /home/trino/alluxio/lib
 
 # Copy the JVX Prometheus agent jar file to the Alluxio lib dir
 COPY jars/jmx_prometheus_javaagent-${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
