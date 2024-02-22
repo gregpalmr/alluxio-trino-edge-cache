@@ -62,20 +62,6 @@ Then extract the Alluxio Edge S3 under store file system integration jar file us
      tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
      alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
 
- If you intend to also access Hadoop file systems, then you can extract one of the Hadoop under store file system integration jar files with these commands:
-
-     tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
-     alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar
-
-or
-
-     tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
-     alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-2.10-304-SNAPSHOT.jar
-
-or
-     tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
-     alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar
-
 #### c. Copy the extracted jar files to the "jars" directory
 
 Copy the extracted jar files into the "jars" directory using the commands:
@@ -83,18 +69,6 @@ Copy the extracted jar files into the "jars" directory using the commands:
      cp alluxio-enterprise-304-SNAPSHOT/client/alluxio-emon-304-SNAPSHOT-client.jar ./jars/
 
      cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar ./jars/
-
-If you intend to access a Hadoop file system, then you can copy a version of the Hadoop under store interface jar files as well, using the commands:
-
-     cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar ./jars/
-
-or
-
-     cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-2.10-304-SNAPSHOT.jar ./jars/
-
-or
-
-     cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar ./jars/
 
 #### d. Remove the unused portion of the release directory
 
@@ -598,21 +572,6 @@ The core-site.xml file shows that an Alluxio Edge class named alluxio.emon.hadoo
         </property>
      
      </configuration>
-
-But you must also install the appropriate Alluxio Edge understore jar file for the Hadoop release you are using. These jar files are contained in the original Alluxio Edge install tar file you received. There names will be similar to these:
-
-     alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar
-     alluxio-underfs-emon-hadoop-2.10-304-SNAPSHOT.jar
-     alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar
-
-If you have a separate Alluxio Enterprise Edition cluster that you would like to access via Trino queries using the LOCATION setting of alluxio://, then you can add a new section to the core-site.xml file like this:
-
-     <property>
-        <name>fs.alluxio.impl</name>
-        <value>alluxio.emon.hadoop.FileSystemEE</value>
-     </property>
-
-There is no need to copy a new understore jar file.
 
 There is also a requirement to modify the Trino /etc/trino/jvm.conf file to include a the Alluxio Edge variable definitions that point to the Alluxio Edge home directory and the conf directory, like this:
 
