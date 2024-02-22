@@ -131,11 +131,6 @@ alluxio.underfs.s3.disable.dns.buckets=true
 #s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
 #alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1
 
-# Alluxio under file system setup (HDFS)
-#
-#alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
-#alluxio.underfs.hdfs.remote=true
-
 # Enable edge cache on client (RAM disk only)
 #
 alluxio.user.client.cache.enabled=true
@@ -168,11 +163,6 @@ If you were going to use AWS S3 buckets as your persistent under store, you woul
      alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1  
 
 If you were going to use Hadoop HDFS as your persistent under store, you would include a section like this in the properties file:
-
-     # Alluxio under file system setup (HDFS)
-     #
-     alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
-     alluxio.underfs.hdfs.remote=true
 
 If you were to change where Alluxio Edge stores cache files, you could replace the "cache on client" section of the properties file like this example, where there are two NVMe volumes of different sizes available:
 
@@ -212,30 +202,9 @@ cat << EOF > config-files/alluxio/core-site.xml
     <value>alluxio.emon.hadoop.FileSystemEE</value>
   </property>
 
-  <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
-  <!--
-  <property>
-    <name>fs.hdfs.impl</name>
-    <value>alluxio.emon.hadoop.FileSystemEE</value>
-  </property>
-  -->
-
 </configuration>
 EOF
 ```
-
-If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can un-comment the section in the core-site.xml file, like this:
-
-    <property>
-        <name>fs.hdfs.impl</name>
-        <value>alluxio.emon.hadoop.FileSystemEE</value>
-    </property>
-
-But you must also install the appropriate Alluxio Edge understore jar file for the Hadoop release you are using. These jar files are contained in the original Alluxio Edge install tar file you received. There names will be similar to these:
-
-     alluxio-underfs-emon-hadoop-2.7-304-SNAPSHOT.jar
-     alluxio-underfs-emon-hadoop-2.10-304-SNAPSHOT.jar
-     alluxio-underfs-emon-hadoop-3.3-304-SNAPSHOT.jar
 
 #### c. Create the Alluxio metrics configuration file
 
@@ -367,12 +336,10 @@ cat <<EOF > Dockerfile
 # NOTE: Remove the escape chars (\${...}) if manually copying and pasting
 #       (that is, not using the "cat <<EOF > Dockerfile" command)
 
-ARG TRINO_VERSION=403
-#ARG TRINO_VERSION=418
+ARG TRINO_VERSION=431
 
 FROM docker.io/trinodb/trino:\${TRINO_VERSION}
 
-ARG ALLUXIO_VERSION=304-SNAPSHOT
 ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0   
 
 # Create Alluxio Home
@@ -388,16 +355,13 @@ COPY config-files/alluxio/metrics.properties      /home/trino/alluxio/conf
 RUN find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
 
 # Copy the Alluxio Edge client jar file to the Trino catalog dirs
-COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hive
-COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/hudi
-COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/delta-lake  
-COPY jars/alluxio-emon-\${ALLUXIO_VERSION}-client.jar /usr/lib/trino/plugin/iceberg
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/hive
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/hudi
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/delta-lake  
+COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/iceberg
 
 # Copy the Alluxio Edge under store jar file to the Trino lib dir 
-COPY jars/alluxio-underfs-emon-s3a-\${ALLUXIO_VERSION}.jar          /home/trino/alluxio/lib
-#COPY jars/alluxio-underfs-emon-hadoop-3.3-\${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
-#COPY jars/alluxio-underfs-emon-hadoop-2.10-\${ALLUXIO_VERSION}.jar /home/trino/alluxio/lib
-#COPY jars/alluxio-underfs-emon-hadoop-2.7-\${ALLUXIO_VERSION}.jar  /home/trino/alluxio/lib
+COPY jars/alluxio-underfs-emon-s3a-*jar          /home/trino/alluxio/lib
 
 # Copy the JVX Prometheus agent jar file to the Alluxio lib dir
 COPY jars/jmx_prometheus_javaagent-\${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
@@ -635,22 +599,7 @@ The core-site.xml file shows that an Alluxio Edge class named alluxio.emon.hadoo
           <value>alluxio.emon.hadoop.FileSystemEE</value>
         </property>
      
-        <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
-        <!--
-        <property>
-          <name>fs.hdfs.impl</name>
-          <value>alluxio.emon.hadoop.FileSystemEE</value>
-        </property>
-        -->
-     
      </configuration>
-
-If you want Alluxio to also service requests for LOCATION setting of hdfs://, then you can un-comment the section in the core-site.xml file, like this:
-
-    <property>
-        <name>fs.hdfs.impl</name>
-        <value>alluxio.emon.hadoop.FileSystemEE</value>
-    </property>
 
 But you must also install the appropriate Alluxio Edge understore jar file for the Hadoop release you are using. These jar files are contained in the original Alluxio Edge install tar file you received. There names will be similar to these:
 
@@ -711,11 +660,6 @@ The contents are displayed and you can see the alluxio.underfs.s3.endpoint prope
      #s3a.accessKeyId=<PUT_YOUR_AWS_ACCESS_KEY_ID_HERE>
      #s3a.secretKey=<PUT_YOUR_AWS_SECRET_KEY_HERE>
      #alluxio.underfs.s3.region=<PUT_YOUR_AWS_REGION_HERE> # Example: us-east-1
-
-     # Alluxio under file system setup (HDFS)
-     #
-     #alluxio.underfs.hdfs.configuration=<PUT_YOUR_CORE_SITE_AND_HDFS_SITE_FILES_HERE> # example /home/trino/alluxio/conf/core-site.xml:/home/trino/alluxio/conf/hdfs-site.xml
-     #alluxio.underfs.hdfs.remote=true
 
      # Enable edge cache on client (RAM disk only)
      #
