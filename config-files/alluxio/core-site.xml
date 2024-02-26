@@ -22,12 +22,4 @@
     <value>alluxio.emon.hadoop.FileSystemEE</value>
   </property>
 
-  <!-- Enable the Alluxio Edge Cache Integration for hdfs URIs -->
-  <!--
-  <property>
-    <name>fs.hdfs.impl</name>
-    <value>alluxio.emon.hadoop.FileSystemEE</value>
-  </property>
-  -->
-
 </configuration>

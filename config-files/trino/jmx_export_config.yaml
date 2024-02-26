@@ -2,7 +2,7 @@
 # FILE: jmx_export_config.yaml
 #
 # DESC: This is the Alluxio Edge Java JMX metrics export file. It should
-#       be placed in: /etc/trino/
+#       be placed in: /etc/trino/jmx_export_config.yaml
 #
 ---
 startDelaySeconds: 0

@@ -54,27 +54,27 @@ Contact your Alluxio account representative at sales@alluxio.com and request a t
 
 There are two Alluxio Edge Java jar files that need to be installed on each Trino node. First, extract the Alluxio Edge client jar file from the tar file using the command:
 
-     tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar \
-     alluxio-enterprise-304-SNAPSHOT/client/alluxio-emon-304-SNAPSHOT-client.jar
+     tar xf ~/Downloads/alluxio-edge-1.0-4.0.0-bin.tar.gz \
+     alluxio-edge-1.0-4.0.0/client/alluxio-emon-edge-1.0-4.0.0-client.jar
 
 Then extract the Alluxio Edge S3 under store file system integration jar file using the command:
 
-     tar xf ~/Downloads/alluxio-enterprise-304-SNAPSHOT-bin-4d128112c2.tar.gz \
-     alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar
+     tar xf ~/Downloads/alluxio-edge-1.0-4.0.0-bin.tar.gz \
+     alluxio-edge-1.0-4.0.0/lib/alluxio-underfs-emon-s3a-edge-1.0-4.0.0.jar
 
 #### c. Copy the extracted jar files to the "jars" directory
 
 Copy the extracted jar files into the "jars" directory using the commands:
 
-     cp alluxio-enterprise-304-SNAPSHOT/client/alluxio-emon-304-SNAPSHOT-client.jar ./jars/
+     cp alluxio-edge-1.0-4.0.0/client/alluxio-emon-edge-1.0-4.0.0-client.jar ./jars/
 
-     cp alluxio-enterprise-304-SNAPSHOT/lib/alluxio-underfs-emon-s3a-304-SNAPSHOT.jar ./jars/
+     cp alluxio-edge-1.0-4.0.0/lib/alluxio-underfs-emon-s3a-edge-1.0-4.0.0.jar ./jars/
 
 #### d. Remove the unused portion of the release directory
 
 Remove the unused portion of the release directory with the command:
 
-     rm -rf alluxio-enterprise-304-SNAPSHOT
+     rm -rf alluxio-edge-edge-1.0-4.0.0
 
 ### Step 4. Create the Alluxio configuration files
 
@@ -89,7 +89,8 @@ cat << EOF > config-files/alluxio/alluxio-site.properties
 # FILE: alluxio-site.properties
 #
 # DESC: This is the main Alluxio Edge properties file and should
-#      be placed in: /home/trino/alluxio/conf/alluxio-site.properties
+#      be placed in /opt/alluxio/conf/
+#
 
 # Alluxio under file system setup (MinIO)
 #
@@ -124,7 +125,6 @@ alluxio.user.metrics.collection.enabled=true
 alluxio.dora.enabled=false
 
 # end of file
-
 EOF
 ```
 
@@ -153,11 +153,11 @@ cat << EOF > config-files/alluxio/core-site.xml
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
-<!-- 
-  FILE: core-site.xml 
+<!--
+  FILE: core-site.xml
 
   DESC: This is the Alluxio Edge core-site.xml file and should be
-        placed in: /home/trino/alluxio/conf/core-site.xml
+        placed in: /etc/trino/
 -->
 
 <configuration>
@@ -188,7 +188,7 @@ cat <<EOF > config-files/alluxio/metrics.properties
 # FILE:    metrics.properties
 #
 # DESC:    This properties file enables the Alluxio Jmx sink
-#          It should be placed in: /home/trino/alluxio/conf/metrics.properties
+#          It should be placed in: /opt/alluxio/conf/metrics.properties
 
 sink.jmx.class=alluxio.metrics.sink.JmxSink
 
@@ -204,20 +204,21 @@ cat <<EOF > config-files/trino/catalog/hive.properties
 #
 # FILE: hive.properties
 #
-# DESC: This is the Trino catalog config file for the MinIO S3 store. 
+# DESC: This is the Trino catalog config file for the MinIO S3 store.
 #       It should be placed in: /etc/trino/catalog/hive.properties
-# 
+#
+
 connector.name=hive
+
 hive.s3-file-system-type=HADOOP_DEFAULT
 hive.metastore.uri=thrift://hive-metastore:9083
-hive.s3.endpoint=http://minio:9000
-hive.s3.aws-access-key=minio
-hive.s3.aws-secret-key=minio123
+#hive.s3.endpoint=http://minio:9000
+#hive.s3.aws-access-key=minio
+#hive.s3.aws-secret-key=minio123
 hive.non-managed-table-writes-enabled=true
-hive.s3select-pushdown.enabled=true
-hive.storage-format=ORC
+hive.storage-format=PARQUET
 hive.allow-drop-table=true
-hive.config.resources=/home/trino/alluxio/conf/core-site.xml
+hive.config.resources=/opt/alluxio/conf/core-site.xml
 EOF
 ```
 #### e. Create the jmx_export_config.yaml file
@@ -253,7 +254,7 @@ cat <<EOF > config-files/trino/jvm.config
 # FILE: jvm.config
 #
 # DESC: This is the Trino Java JVM configuration script and should be
-#       placed in: /etc/trino/jvm.config
+#       placed in /etc/trino/jvm.config
 #
 
 -server
@@ -279,12 +280,12 @@ cat <<EOF > config-files/trino/jvm.config
 -XX:+UseAESCTRIntrinsics
 
 # Setup Alluxio Edge integration
--Dalluxio.home=/home/trino/alluxio
--Dalluxio.conf.dir=/home/trino/alluxio/conf
+-Dalluxio.home=/opt/alluxio
+-Dalluxio.conf.dir=/opt/alluxio/conf
 
 # Setup Alluxio Edge cache metrics
--Dalluxio.metrics.conf.file=/home/trino/alluxio/conf/metrics.properties
--javaagent:/home/trino/alluxio/lib/jmx_prometheus_javaagent-0.20.0.jar=9696:/etc/trino/jmx_export_config.yaml
+-Dalluxio.metrics.conf.file=/opt/alluxio/conf/metrics.properties
+-javaagent:/usr/lib/trino/lib/jmx_prometheus_javaagent-0.20.0.jar=9696:/etc/trino/jmx_export_config.yaml
 
 # end of file
 EOF
@@ -305,44 +306,55 @@ cat <<EOF > Dockerfile
 #
 # UASGE: docker build -t mytrino/trino-alluxio-edge .
 #
-# NOTE: Remove the escape chars (\${...}) if manually copying and pasting
-#       (that is, not using the "cat <<EOF > Dockerfile" command)
+# NOTE 1: Remove the escape chars (${...}) if manually copying and pasting
+#         (that is, not using the "cat <<EOF > Dockerfile" command)
+# NOTE 2: Alluxio Edge currently works with Java 17. Trino 431 is
+#         the last Trino release that uses Java 17 as later releases use
+#         Java 21. This Dockerfile is setup to use the Java 17 docker image.
 
-ARG TRINO_VERSION=431
+ARG TRINO_VERSION=431       # Ver 431 is the last Trino version to use Java 17
 
-FROM docker.io/trinodb/trino:\${TRINO_VERSION}
+FROM docker.io/trinodb/trino:${TRINO_VERSION}
+USER root
 
-ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0   
+ARG JMX_PROMETHEUS_AGENT_VERSION=0.20.0
 
-# Create Alluxio Home
-RUN mkdir -p /home/trino/alluxio/conf
-RUN mkdir -p /home/trino/alluxio/lib
+# Create Alluxio directories
+RUN mkdir -p /opt/alluxio/conf && mkdir -p /opt/alluxio/lib
 
 # Copy Alluxio config files to the Alluxio conf dir
-COPY config-files/alluxio/core-site.xml           /home/trino/alluxio/conf
-COPY config-files/alluxio/alluxio-site.properties /home/trino/alluxio/conf
-COPY config-files/alluxio/metrics.properties      /home/trino/alluxio/conf
+COPY config-files/alluxio/core-site.xml           /opt/alluxio/conf/
+COPY config-files/alluxio/alluxio-site.properties /opt/alluxio/conf/
+COPY config-files/alluxio/metrics.properties      /opt/alluxio/conf/
 
-# Remove old versions of Alluxio jar files from the container
+# Copy the Alluxio jar files to the Alluxio lib dir
+COPY jars/alluxio-emon-*-client.jar      /opt/alluxio/lib/
+COPY jars/alluxio-underfs-emon-s3a-*.jar /opt/alluxio/lib/
+
+# Remove old versions of any Alluxio jar files from the container
 RUN find /usr/lib/trino -name alluxio*shaded* -exec rm {} \;
 
-# Copy the Alluxio Edge client jar file to the Trino catalog dirs
-COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/hive
-COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/hudi
-COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/delta-lake  
-COPY jars/alluxio-emon-*-client.jar /usr/lib/trino/plugin/iceberg
-
-# Copy the Alluxio Edge under store jar file to the Trino lib dir 
-COPY jars/alluxio-underfs-emon-s3a-*jar          /home/trino/alluxio/lib
+# Create soft links to the Alluxio Edge jar files in the Trino dirs
+RUN ln -s /opt/alluxio/lib/alluxio-underfs-emon-s3a-*.jar /usr/lib/trino/lib/ \
+    && ln -s /opt/alluxio/lib/alluxio-emon-*-client.jar   /usr/lib/trino/plugin/hive/ \
+    && ln -s /opt/alluxio/lib/alluxio-emon-*-client.jar   /usr/lib/trino/plugin/hudi/ \
+    && ln -s /opt/alluxio/lib/alluxio-emon-*-client.jar   /usr/lib/trino/plugin/delta-lake/ \
+    && ln -s /opt/alluxio/lib/alluxio-emon-*-client.jar   /usr/lib/trino/plugin/iceberg/
 
 # Copy the JVX Prometheus agent jar file to the Alluxio lib dir
-COPY jars/jmx_prometheus_javaagent-\${JMX_PROMETHEUS_AGENT_VERSION}.jar /home/trino/alluxio/lib
+COPY jars/jmx_prometheus_javaagent-${JMX_PROMETHEUS_AGENT_VERSION}.jar /usr/lib/trino/lib
 
 # Copy the Trino config files to the Trino etc dir
-COPY config-files/trino/catalog/hive.properties /etc/trino/catalog
-COPY config-files/trino/jvm.config               /etc/trino
-COPY config-files/alluxio/core-site.xml          /etc/trino
-COPY config-files/trino/jmx_export_config.yaml   /etc/trino
+COPY config-files/trino/catalog/hive.properties      /etc/trino/catalog
+COPY config-files/trino/catalog/deltalake.properties /etc/trino/catalog
+COPY config-files/trino/catalog/iceberg.properties   /etc/trino/catalog
+COPY config-files/trino/jvm.config                   /etc/trino
+COPY config-files/alluxio/core-site.xml              /etc/trino
+COPY config-files/trino/jmx_export_config.yaml       /etc/trino
+
+RUN chown -R trino:trino /opt/alluxio \
+    && chown -R trino:trino /usr/lib/trino \
+    && chown -R trino:trino /etc/trino
 
 USER trino
 
@@ -702,6 +714,10 @@ ORDER BY name;
 This is a simple example with Trino queries being run one at a time. In a real production environment, there could be hundreds of Trino jobs running concurrently and Alluxio Edge would handle all their data retrieval requests in a highly parallelized fashion with cache hits, misses, and evictions happening all at once.
 
 ![alt Alluxio Edge Grafana Cache Hit Rate](images/Alluxio_Edge_Grafana_Cache_Hit_Rate.png?raw=true)
+
+The Alluxio Edge Grafana dashboard shows the potential S3 API costs savings and in this simple example, Alluxio Edge saved 42.6% on the costs of the S3 API calls.
+
+![alt Alluxio Edge S3 API Cost Savings](images/Alluxio_Edge_Grafana_API_Cost_Savings.png?raw=true)
 
 ### Step 11. Explore the Alluxio Edge Dashboard configuration
 
